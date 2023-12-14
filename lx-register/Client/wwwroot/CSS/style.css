@@ -1,0 +1,28 @@
+﻿body, html {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    /* Use a background image URL of your choice */
+    background-image: url(/wwwroot//img//bg.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+#registrationForm {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+input[type="text"] {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    width: 80%;
+    /* Style as needed */
+}

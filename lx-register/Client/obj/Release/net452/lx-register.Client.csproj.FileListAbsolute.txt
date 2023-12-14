@@ -1,0 +1,10 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\bin\Release\net452\lx-register.Client.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\bin\Release\net452\CitizenFX.Core.Client.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.csproj.AssemblyReference.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.AssemblyInfoInputs.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.AssemblyInfo.cs
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.csproj.CoreCompileInputs.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.csproj.CopyComplete
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\obj\Release\net452\lx-register.Client.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\bin\Release\net452\Newtonsoft.Json.dll

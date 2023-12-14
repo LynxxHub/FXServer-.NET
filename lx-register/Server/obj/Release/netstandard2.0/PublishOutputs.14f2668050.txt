@@ -1,0 +1,4 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Server\bin\Release\netstandard2.0\publish\lx-register.Server.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Server\bin\Release\netstandard2.0\publish\lx-register.Server.deps.json
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Server\bin\Release\netstandard2.0\publish\lx-register.Server.net.pdb
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Server\bin\Release\netstandard2.0\publish\CitizenFX.Core.Server.dll
