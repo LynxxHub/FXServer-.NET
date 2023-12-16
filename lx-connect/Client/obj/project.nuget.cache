@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "hq/lrJGktZdERI9XQc6ZQ67tjmKyPN0sMTsBKj7JF5l/R/o47fqgZpWPS4qeN6NXPByo6IgII62cxbDtOsvOTQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Wests\\Desktop\\FiveMResourceTemplate\\lx-connect\\Client\\lx-connect.Client.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.client\\1.0.7211\\citizenfx.core.client.1.0.7211.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.framework.client\\0.2.3\\citizenfx.framework.client.0.2.3.nupkg.sha512"
+  ],
+  "logs": []
+}

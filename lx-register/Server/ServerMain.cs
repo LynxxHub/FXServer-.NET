@@ -19,8 +19,9 @@ namespace lx_register.Server
             string name = data["name"].ToString();
             int age = Convert.ToInt32(data["age"]);
 
-            Debug.WriteLine(name+ " " + age);
-        }
+            TriggerEvent("EF:RegisterUser", name, age);
+            Debug.WriteLine("RegisterUser should be triggered!");
 
+        }
     }
 }

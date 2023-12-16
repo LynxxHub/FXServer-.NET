@@ -1,0 +1,2 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Client\bin\Release\net452\publish\lx-connect.Client.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Client\bin\Release\net452\publish\CitizenFX.Core.Client.dll
