@@ -12,5 +12,15 @@
   
       <Compile Include="../Shared/**/*.cs" />
     </ItemGroup>
+  
+    <ItemGroup>
+      <Compile Remove="..\Shared\Dummy.cs" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>bin\Debug\netstandard2.0\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+    </ItemGroup>
 </Project>
   

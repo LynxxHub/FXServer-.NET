@@ -3,3 +3,4 @@ C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\bin\Release\netst
 C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\bin\Release\netstandard2.0\publish\lx-connect.Server.net.pdb
 C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\bin\Release\netstandard2.0\publish\CitizenFX.Core.Server.dll
 C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\bin\Release\netstandard2.0\publish\Microsoft.CSharp.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\bin\Release\netstandard2.0\publish\Newtonsoft.Json.dll

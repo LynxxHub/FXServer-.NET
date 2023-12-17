@@ -8,3 +8,5 @@ C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\obj\Release\netst
 C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\obj\Release\netstandard2.0\lx-connect.Server.csproj.CoreCompileInputs.cache
 C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\obj\Release\netstandard2.0\lx-connect.Server.net.dll
 C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\obj\Release\netstandard2.0\lx-connect.Server.net.pdb
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\bin\Release\netstandard2.0\Newtonsoft.Json.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-connect\Server\obj\Release\netstandard2.0\lx-connect.Server.csproj.CopyComplete

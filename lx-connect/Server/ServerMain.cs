@@ -1,42 +1,36 @@
-using CitizenFX.Core;
-using Config.Reader;
+﻿using CitizenFX.Core;
+using lx_connect.Server.Manager;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using static CitizenFX.Core.Native.API;
 
 
 namespace lx_connect.Server
 {
     public class ServerMain : BaseScript
     {
-        private readonly iniconfig _config;
+        private readonly string _languageConst;
         private readonly int _queueRefreshRate;
+        private readonly Dictionary<string, string> _config;
+        private readonly Dictionary<string, string> _language;
 
         public ServerMain()
         {
-            _config = new iniconfig("lx-connect", "config.ini");
-            _queueRefreshRate = _config.GetIntValue("General", "QueueRefreshRate", 0);
+            _config = ConfigManager.LoadConfig();
+            _queueRefreshRate = int.Parse(_config["QueueRefreshRate"]);
+            _languageConst = _config["Language"];
+            _language = LanguageManager.LoadLanguage(_languageConst);
 
             EventHandlers["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(OnPlayerConnecting);
-        }
-
-        [Command("hello_server")]
-        public void HelloServer()
-        {
-            Debug.WriteLine("Sure, hello.");
         }
 
         private async void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
         {
 
-            Debug.WriteLine(GetPlayerIdentifierByType(player.Handle, "steam"));
             Dictionary<string, string> _userIdentifiers = new Dictionary<string, string>();
             deferrals.defer();
-            //TODO: Fix ConfigReader!
-            //string welcomeMessage = _config.GetStringValue("Language", "WelcomeMessage", "FAILED: NOT FOUND WelcomeMessage");
-            deferrals.update($"Welcome to the LYNX server {playerName}, we're going to check your licenses. Please wait!");
+
+            deferrals.update(string.Format(_language["WelcomeMessage"],playerName));
             await Delay(3500);
 
             foreach (var identifier in player.Identifiers)
@@ -60,32 +54,72 @@ namespace lx_connect.Server
 
             if(IsValid)
             {
-                //TODO: Fix ConfigReader!
-                //string joiningMessage = _config.GetStringValue("Language", "Joining", "FAILED: NOT FOUND Joining");
-
-                deferrals.update("We are connecting you to the server...");
+                deferrals.update(_language["ConnectingMessage"]);
                 await Delay(_queueRefreshRate + 3250);
                 deferrals.done();
             }
-            //TODO: Fix ConfigReader!
-            //string errorMessage = _config.GetStringValue("Language", "Error", "FAILED: NOT FOUND Error");
-            deferrals.done("[ERROR]: Please contact the owner(Lynx)!");
+
+            deferrals.done(_language["ErrorMessage"]);
         }
 
         private async Task<bool> ValidateIdentifiersAsync(Dictionary<string,string> userIdentifiers, dynamic deferrals)
         {
+            var steamValid = false;
+            var licenceValid = false;
+            var ipValid = false;
             foreach (var id in userIdentifiers)
             {
-                //TODO: Fix ConfigReader!
-                //string licenseMessage = _config.GetStringValue("Language", "WelcomeMessage", "FAILED: NOT FOUND WelcomeMessage");
-                //deferrals.update(string.Format(licenseMessage, id.Key, id.Value));
+                string emoji;
+                switch (id.Key)
+                {
+                    case "Steam":
+                        emoji = _language["SteamEmoji"];
+                        steamValid = true;
+                        break;
+                    case "License":
+                        emoji = _language["LicenseEmoji"];
+                        licenceValid = true;
+                        break;
+                    case "IP":
+                        emoji = _language["IPEmoji"];
+                        ipValid = true;
+                        break;
+                    case "Discord":
+                        emoji = _language["DiscordEmoji"];
+                        break;
+                    default:
+                        emoji = _language["DefaultEmoji"];
+                        break;
+                }
 
-                deferrals.update($"Your {id.Key} - {id.Value} is being checked!");
+                deferrals.update(string.Format(_language["CheckingLicenseMessage"], id.Key, emoji, id.Value));
                 //TODO:Implament validations with DB
                 await Delay(_queueRefreshRate + 2500);
             }
 
-            return true;
+            if (steamValid && licenceValid && ipValid)
+            {
+                deferrals.update(_config["AuthenticationMessage"]);
+
+                TriggerEvent("EF:DoesUserExist", userIdentifiers["Steam"], userIdentifiers["License"], new Action<bool>(exists =>
+                {
+                    Debug.WriteLine($"CONNECT: {exists}");
+                    if (exists)
+                    {
+                        deferrals.update(_language["AuthenticationSuccessMessage"]);
+                    }
+                    else
+                    {
+                        deferrals.update(_language["AuthenticationFailedMessage"]);
+                    }
+                }));
+
+                await Delay(_queueRefreshRate + 5000);
+
+                return true;
+            }
+
+            return false;
         }
 
         public static string ConvertSteamIDHexToDec(string hexSteamID)
