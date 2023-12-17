@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using lx_connect.Server.Model;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -9,23 +10,22 @@ namespace lx_connect.Server.Manager
 {
     public static class ConfigManager
     {
-        public static Dictionary<string, string> LoadConfig()
+        public static Config LoadConfig()
         {
             try
             {
-                var configData = new Dictionary<string, string>();
                 var currentDirectory = Directory.GetCurrentDirectory();
                 string ConfigFilePath = Path.Combine(currentDirectory, "resources", "[lynx]", API.GetCurrentResourceName(), "Config", "config.json");
 
                 string json = File.ReadAllText(ConfigFilePath);
-                configData = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                var configData = JsonConvert.DeserializeObject<Config>(json);
 
                 return configData;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"Error: {ex.Message}");
-                return new Dictionary<string, string>();
+                return new Config();
             }
         }
     }

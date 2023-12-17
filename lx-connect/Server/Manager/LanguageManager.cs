@@ -25,8 +25,6 @@ namespace lx_connect.Server.Manager
                     "lang", 
                     languageFileName + ".json");
 
-
-
                 string json = File.ReadAllText(languageFilePath);
                 langData = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
 

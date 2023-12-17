@@ -1,58 +1,45 @@
 ﻿using CitizenFX.Core;
 using lx_connect.Server.Manager;
+using lx_connect.Server.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 
+//TEST
+//(GOD TEST && Drop test)
+// 1. Viki join queue -> Lynx join as god - VERIFIED!
+// 2. Lynx join queue -> Viki joins queue -> Lynx log in server -> Viki should be 1/1 -> Lynx left server -> Viki should change to 1/2
+
 namespace lx_connect.Server
 {
     public class ServerMain : BaseScript
     {
-        private readonly string _languageConst;
-        private readonly int _queueRefreshRate;
-        private readonly int _maxPlayers;
-        private readonly Dictionary<string, string> _config;
+        private readonly Config _config;
         private readonly Dictionary<string, string> _language;
-        private List<QueuePlayer> waitingList = new List<QueuePlayer>();
+        private readonly List<QueuePlayer> _waitingList;
+        private readonly Dictionary<string,DateTime> _droppedPlayers;
+        private readonly PriorityManager _priorityManager;
 
         public ServerMain()
         {
-            _config = new Dictionary<string, string>();
             _config = ConfigManager.LoadConfig();
-            _queueRefreshRate = int.Parse(_config["QueueRefreshRate"]);
-            _languageConst = _config["Language"];
-            _maxPlayers = int.Parse(_config["MaxPlayerCount"]);
-            _language = LanguageManager.LoadLanguage(_languageConst);
+            _language = LanguageManager.LoadLanguage(_config.Language);
+            _waitingList = new List<QueuePlayer>();
+            _priorityManager = new PriorityManager(_config);
+            _droppedPlayers = new Dictionary<string, DateTime>();
 
-            EventHandlers["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(OnPlayerConnecting);
-            EventHandlers["playerDropped"] += new Action<Player, string>(OnPlayerDropped);
+            RegisterEventHandlers();
 
             Task.Run(async () => await ProcessQueue());
+            Task.Run(async () => await PeriodicCleanup());
         }
 
-        private async Task ProcessQueue()
+        private void RegisterEventHandlers()
         {
-            while (true)
-            {
-                if (waitingList.Any())
-                {
-                    if (Players.Count() < _maxPlayers)
-                    {
-                        waitingList[0].CanJoin = true;
-                    } 
-                }
-
-                await Delay(10000);
-            }
-        }
-
-        private void OnPlayerDropped(Player player, string reason)
-        {
-            var queuePlayer = waitingList.FirstOrDefault(p => p.Player.Handle == player.Handle);
-            if (queuePlayer != null)
-                waitingList.Remove(queuePlayer);
+            EventHandlers["playerConnecting"] += new Action<Player, string, dynamic, dynamic>(OnPlayerConnecting);
+            EventHandlers["playerDropped"] += new Action<Player, string>(OnPlayerDropped);
         }
 
         private async void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
@@ -60,8 +47,8 @@ namespace lx_connect.Server
             try
             {
                 deferrals.defer();
-
                 deferrals.update(string.Format(_language["WelcomeMessage"], playerName));
+
                 await Delay(3500);
 
                 Dictionary<string, string> userIdentifiers = GetUserIdentifiers(player);
@@ -69,17 +56,44 @@ namespace lx_connect.Server
 
                 if (IsValid)
                 {
-                    if (Players.Count() < _maxPlayers)
+
+                    if (Players.Count() < _config.MaxPlayerCount)
                     {
                         deferrals.update(_language["ConnectingMessage"]);
-                        await Delay(_queueRefreshRate + 3250);
+                        await Delay(_config.QueueRefreshRate + 3250);
                         deferrals.done();
                     }
                     else
                     {
-                        QueuePlayer queuePlayer = new QueuePlayer(player, DateTime.UtcNow, false);
-                        waitingList.Add(queuePlayer);
-                        await UpdateQueuePlayer(player.Handle, deferrals);
+                        QueuePlayer queuePlayer = new QueuePlayer(player, userIdentifiers["Steam"]);
+
+                        queuePlayer.IsGod = _priorityManager.IsPlayerGod(queuePlayer.SteamID);
+                        queuePlayer.HasPriority = _priorityManager.HasPriority(queuePlayer.SteamID);
+
+
+                        if (queuePlayer.IsGod)
+                        {
+                            int position = _priorityManager.FindGodPriorityPosition(_waitingList);
+                            if (!IsPlayerWaiting(queuePlayer.SteamID))
+                                _waitingList.Insert(position, queuePlayer);
+                        }
+                        else if (queuePlayer.HasPriority || _droppedPlayers.ContainsKey(queuePlayer.SteamID))
+                        {
+                            int position = _priorityManager.FindPlayerPriorityPosition(_waitingList);
+                            if (!IsPlayerWaiting(queuePlayer.SteamID))
+                                _waitingList.Insert(position, queuePlayer);
+
+                            if (_droppedPlayers.ContainsKey(queuePlayer.SteamID))
+                                _droppedPlayers.Remove(queuePlayer.SteamID);
+
+                        } 
+                        else
+                        {
+                            if (!IsPlayerWaiting(queuePlayer.SteamID))
+                                _waitingList.Add(queuePlayer);
+                        }
+
+                        await UpdateQueuePlayer(userIdentifiers["Steam"], deferrals);
                     }
                 }
                 else
@@ -90,54 +104,91 @@ namespace lx_connect.Server
             catch (Exception ex)
             {
                 Console.WriteLine($"Error during player connection: {ex.Message}");
+                Console.WriteLine($"INNER: {ex.InnerException}");
+                Console.WriteLine($"STACK: {ex.StackTrace}");
                 deferrals.done($"An error occurred: {ex.Message}");
             }
-
-            deferrals.done(_language["ErrorMessage"]);
         }
 
-        private async Task UpdateQueuePlayer(string handle, dynamic deferrals)
+        private bool IsPlayerWaiting(string steamID)
+        {
+            return _waitingList.Any(p => p.SteamID == steamID);
+        }
+
+        [Command("PlusOne")]
+        public void PlusOne()
+        {
+            _config.MaxPlayerCount++;
+        }
+
+        [Command("MinusOne")]
+        public void MinusOne()
+        {
+            _config.MaxPlayerCount--;
+        }
+
+        private void OnPlayerDropped([FromSource] Player player, string reason)
+        {
+            var identifiers = GetUserIdentifiers(player);
+
+            _droppedPlayers.Add(identifiers["Steam"],DateTime.UtcNow);
+            Debug.WriteLine($"Player {player.Name} dropped! REASON: {reason}");
+        }
+
+        private async Task ProcessQueue()
         {
             while (true)
             {
-                await Delay(1000);
+                if (_waitingList.Any())
+                {
+                    if (Players.Count() < _config.MaxPlayerCount)
+                    {
+                        _waitingList[0].CanJoin = true;
+                    }
+                }
 
-                var queuePlayer = waitingList.FirstOrDefault(p => p.Player.Handle == handle);
+                await Delay(10000);
+            }
+        }
+
+        private async Task UpdateQueuePlayer(string steamId, dynamic deferrals)
+        {
+            while (true)
+            {
+                var queuePlayer = _waitingList.FirstOrDefault(p => p.SteamID == steamId);
 
                 if (queuePlayer != null)
                 {
                     if (queuePlayer.CanJoin)
                     {
                         deferrals.update(_language["ConnectingMessage"]);
-                        waitingList.Remove(queuePlayer);
-                        await Delay(_queueRefreshRate + 3250);
+                        _waitingList.Remove(queuePlayer);
+                        await Delay(_config.QueueRefreshRate + 3250);
                         deferrals.done();
                         break;
                     }
                     else
                     {
-                        // Calculate the player's position in the queue
-                        int positionInQueue = waitingList.IndexOf(queuePlayer) + 1;
+                        int positionInQueue = _waitingList.IndexOf(queuePlayer) + 1;
 
-                        // Calculate the time in queue
                         TimeSpan timeInQueue = DateTime.UtcNow - queuePlayer.JoinedOn;
                         string timeInQueueFormatted = timeInQueue.ToString(@"mm\:ss");
 
-                        // Update the deferral message with the queue position and time
-                        string queueUpdateMessage = string.Format(_language["QueueUpdateMessage"], positionInQueue, timeInQueueFormatted);
+                        string queueUpdateMessage = string.Format(_language["QueueUpdateMessage"], positionInQueue, _waitingList.Count, timeInQueueFormatted);
                         deferrals.update(queueUpdateMessage);
                     }
-                } 
+                }
                 else
                 {
                     break;
                 }
-                await Delay(0);
 
-
+                await Delay(1000);
             }
         }
 
+
+        //TODO: call from lxEF
         private Dictionary<string, string> GetUserIdentifiers(Player player)
         {
             Dictionary<string, string> userIdentifiers = new Dictionary<string, string>();
@@ -148,7 +199,7 @@ namespace lx_connect.Server
                 {
                     string steamID = ConvertSteamIDHexToDec(identifier);
                     if (steamID != null)
-                        userIdentifiers.Add("Steam", identifier);
+                        userIdentifiers.Add("Steam", steamID);
                 }
                 else if (identifier.StartsWith("license:"))
                     userIdentifiers.Add("License", identifier);
@@ -162,7 +213,7 @@ namespace lx_connect.Server
         }
 
         //TODO: call from lxEF
-        private async Task<bool> ValidateIdentifiersAsync(Player player, Dictionary<string,string> userIdentifiers, dynamic deferrals)
+        private async Task<bool> ValidateIdentifiersAsync(Player player, Dictionary<string, string> userIdentifiers, dynamic deferrals)
         {
             var steamValid = false;
             var licenceValid = false;
@@ -193,8 +244,12 @@ namespace lx_connect.Server
                 }
 
                 deferrals.update(string.Format(_language["CheckingLicenseMessage"], id.Key, emoji, id.Value));
-                await Delay(_queueRefreshRate + 2500);
+                await Delay(_config.QueueRefreshRate + 2500);
             }
+
+            Debug.WriteLine(steamValid.ToString());
+            Debug.WriteLine(licenceValid.ToString());
+            Debug.WriteLine(ipValid.ToString());
 
             if (steamValid && licenceValid && ipValid)
             {
@@ -219,7 +274,7 @@ namespace lx_connect.Server
                     }
                 }));
 
-                await Delay(_queueRefreshRate + 5000);
+                await Delay(_config.QueueRefreshRate + 5000);
 
                 return true;
             }
@@ -239,6 +294,24 @@ namespace lx_connect.Server
             long decSteamID = long.Parse(hexPart, System.Globalization.NumberStyles.HexNumber);
 
             return "steam:" + decSteamID.ToString();
+        }
+
+        private async Task PeriodicCleanup()
+        {
+            while (true)
+            {
+                await Delay(60 * 1000);
+
+                var cutoffTime = DateTime.UtcNow.AddMinutes(-15);
+                var keysToRemove = _droppedPlayers.Where(kvp => kvp.Value < cutoffTime)
+                                                  .Select(kvp => kvp.Key)
+                                                  .ToArray();
+
+                foreach (var key in keysToRemove)
+                {
+                    _droppedPlayers.Remove(key);
+                }
+            }
         }
     }
 }

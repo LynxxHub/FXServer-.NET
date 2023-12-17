@@ -1,0 +1,16 @@
+{
+    "WelcomeMessage": "👋 Welcome to the LYNX server {0}, we're going to check your licenses. Please wait! ⏳",
+    "AuthenticationMessage": "🔒 Authenticating your account. Please wait... ⏳",
+    "AuthenticationSuccessMessage" : "✅ Authentication successful! Welcome aboard! 🎉",
+    "AuthenticationFailedMessage": "❌ Authentication failed. Starting license registration process...⏳",
+    "LicenseRegistrationMessage": "📑🔄 Processing your registration. Hold tight! 🕰️🔐",
+    "ConnectingMessage": "✅ All good! We are connecting you to the server...",
+    "CheckingLicenseMessage": "🔎 Checking your {0} {1} - {2}. Please wait... ⏳",
+    "ErrorMessage": "🚫 [ERROR]: Your licenses are not valid. Please contact the owner(Lynx)!",
+    "QueueUpdateMessage": "🕒 You are currently in position {0}/{1} in the queue with a wait time of {2}⌛",
+    "SteamEmoji": "🎮",
+    "LicenseEmoji": "📄",
+    "IPEmoji": "🌐",
+    "DiscordEmoji": "💬",
+    "DefaultEmoji": "🔍"
+}
