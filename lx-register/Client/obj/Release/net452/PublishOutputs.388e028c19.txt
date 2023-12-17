@@ -1,3 +1,0 @@
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\bin\Release\net452\publish\lx-register.Client.net.dll
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\bin\Release\net452\publish\CitizenFX.Core.Client.dll
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-register\Client\bin\Release\net452\publish\Newtonsoft.Json.dll

@@ -27,30 +27,15 @@ namespace lx_connect.Server
         private async void OnPlayerConnecting([FromSource] Player player, string playerName, dynamic setKickReason, dynamic deferrals)
         {
 
-            Dictionary<string, string> _userIdentifiers = new Dictionary<string, string>();
+
             deferrals.defer();
 
             deferrals.update(string.Format(_language["WelcomeMessage"],playerName));
             await Delay(3500);
 
-            foreach (var identifier in player.Identifiers)
-            {
-                Debug.WriteLine(identifier);
-                if (identifier.StartsWith("steam:"))
-                {
-                    string steamID = ConvertSteamIDHexToDec(identifier);
-                    if (steamID != null)
-                    _userIdentifiers.Add("Steam", identifier);
-                }
-                else if (identifier.StartsWith("license:"))
-                    _userIdentifiers.Add("License", identifier);
-                else if (identifier.StartsWith("ip:"))
-                    _userIdentifiers.Add("IP", identifier);
-                else if (identifier.StartsWith("discord:"))
-                    _userIdentifiers.Add("Discord", identifier);
-            }
+            Dictionary<string, string> userIdentifiers = GetUserIdentifiers(player);
 
-            bool IsValid = await ValidateIdentifiersAsync(_userIdentifiers,deferrals);
+            bool IsValid = await ValidateIdentifiersAsync(player,userIdentifiers, deferrals);
 
             if(IsValid)
             {
@@ -62,7 +47,31 @@ namespace lx_connect.Server
             deferrals.done(_language["ErrorMessage"]);
         }
 
-        private async Task<bool> ValidateIdentifiersAsync(Dictionary<string,string> userIdentifiers, dynamic deferrals)
+        private Dictionary<string, string> GetUserIdentifiers(Player player)
+        {
+            Dictionary<string, string> userIdentifiers = new Dictionary<string, string>();
+            foreach (var identifier in player.Identifiers)
+            {
+                Debug.WriteLine(identifier);
+                if (identifier.StartsWith("steam:"))
+                {
+                    string steamID = ConvertSteamIDHexToDec(identifier);
+                    if (steamID != null)
+                        userIdentifiers.Add("Steam", identifier);
+                }
+                else if (identifier.StartsWith("license:"))
+                    userIdentifiers.Add("License", identifier);
+                else if (identifier.StartsWith("ip:"))
+                    userIdentifiers.Add("IP", identifier);
+                else if (identifier.StartsWith("discord:"))
+                    userIdentifiers.Add("Discord", identifier);
+            }
+
+            return userIdentifiers;
+        }
+
+        //TODO: call from lxEF
+        private async Task<bool> ValidateIdentifiersAsync(Player player, Dictionary<string,string> userIdentifiers, dynamic deferrals)
         {
             var steamValid = false;
             var licenceValid = false;
@@ -93,24 +102,29 @@ namespace lx_connect.Server
                 }
 
                 deferrals.update(string.Format(_language["CheckingLicenseMessage"], id.Key, emoji, id.Value));
-                //TODO:Implament validations with DB
                 await Delay(_queueRefreshRate + 2500);
             }
 
             if (steamValid && licenceValid && ipValid)
             {
-                deferrals.update(_config["AuthenticationMessage"]);
+                deferrals.update(_language["AuthenticationMessage"]);
 
-                TriggerEvent("EF:DoesUserExist", userIdentifiers["Steam"], userIdentifiers["License"], new Action<bool>(exists =>
+                TriggerEvent("EF:DoesUserExist", userIdentifiers["Steam"], userIdentifiers["License"], new Action<bool>(async exists =>
                 {
                     Debug.WriteLine($"CONNECT: {exists}");
+
+                    if (!exists)
+                    {
+                        TriggerEvent("EF:RegisterUser", player.Name, userIdentifiers["Steam"], userIdentifiers["License"], userIdentifiers["IP"]);
+                        deferrals.update(_language["AuthenticationFailedMessage"]);
+                        await Delay(5000);
+                        deferrals.update(_language["LicenseRegistrationMessage"]);
+
+                    }
+
                     if (exists)
                     {
                         deferrals.update(_language["AuthenticationSuccessMessage"]);
-                    }
-                    else
-                    {
-                        deferrals.update(_language["AuthenticationFailedMessage"]);
                     }
                 }));
 
@@ -122,6 +136,8 @@ namespace lx_connect.Server
             return false;
         }
 
+
+        //TODO: call from lxEF
         public static string ConvertSteamIDHexToDec(string hexSteamID)
         {
             if (string.IsNullOrEmpty(hexSteamID) || !hexSteamID.StartsWith("steam:"))

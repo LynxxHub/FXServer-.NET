@@ -6,7 +6,7 @@ namespace lxEF.Server.Data
     public class lxDbContext : DbContext
     {
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<DBUser> DBUsers { get; set; }
 
         // Other DbSets can be added here
 
