@@ -5,7 +5,7 @@ using System.Text;
 
 namespace lx_connect.Server.Model
 {
-    internal class QueuePlayer
+    public class QueuePlayer
     {
         public Player Player { get; set; }
         public DateTime JoinedOn { get; set; }

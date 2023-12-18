@@ -1,11 +1,10 @@
 ﻿using lx_connect.Server.Model;
-using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace lx_connect.Server.Manager
 {
-    internal class PriorityManager
+    public class PriorityManager
     {
         private readonly Config _config;
 
@@ -13,6 +12,20 @@ namespace lx_connect.Server.Manager
         {
             _config = config;
         }
+
+        // Adds a player's username and Steam ID to the priority list.
+        public void AddPriority(string username, string steamID)
+        {
+            _config.Priority.Add(username, steamID);
+        }
+
+        // Removes a player's priority status using Steam ID.
+        public void RemovePriority(string steamID)
+        {
+            _config.Priority.Where(p => p.Value == steamID);
+        }
+
+        // Checks if a player has 'God' status by Steam ID in the configuration file. If so, he will join before priority players. 
         public bool IsPlayerGod(string steamID)
         {
             if (steamID != null && _config.Gods.ContainsValue(steamID))
@@ -23,6 +36,7 @@ namespace lx_connect.Server.Manager
             return false;
         }
 
+        // Determines if a player has priority in the queue by Steam ID in the configuration file.
         public bool HasPriority(string steamID)
         {
             if (steamID != null && _config.Priority.ContainsValue(steamID))
@@ -33,6 +47,7 @@ namespace lx_connect.Server.Manager
             return false;
         }
 
+        // Finds the position of a player in the priority queue.
         public int FindPlayerPriorityPosition(List<QueuePlayer> queueList)
         {
             bool hasGod = false;
@@ -58,6 +73,7 @@ namespace lx_connect.Server.Manager
             return 0;
         }
 
+        // Finds the position of a 'God' player in the queue.
         public int FindGodPriorityPosition(List<QueuePlayer> queueList)
         {
             for (int i = queueList.Count - 1; i >= 0; i--)
@@ -69,9 +85,5 @@ namespace lx_connect.Server.Manager
             }
             return 0;
         }
-
-
-
-        //TODO: Implement Add and remove priority and server side commands
     }
 }

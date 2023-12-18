@@ -9,14 +9,6 @@ namespace lx_connect.Client
     {
         public ClientMain()
         {
-            Debug.WriteLine("Hi from lx_connect.Client!");
-        }
-
-        [Tick]
-        public Task OnTick()
-        {
-
-            return Task.FromResult(0);
         }
     }
 }

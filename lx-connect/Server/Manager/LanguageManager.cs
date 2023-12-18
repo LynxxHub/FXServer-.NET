@@ -8,8 +8,9 @@ using System.Text;
 
 namespace lx_connect.Server.Manager
 {
-    internal class LanguageManager
+    public class LanguageManager
     {
+        // Loads and returns language data from the specified local JSON file.
         public static Dictionary<string, string> LoadLanguage(string languageFileName)
         {
             try

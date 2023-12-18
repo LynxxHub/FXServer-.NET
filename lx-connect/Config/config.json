@@ -8,5 +8,11 @@
     },
     "Language":"en",
     "QueueRefreshRate": "1000",
-    "MaxPlayerCount": "0"
+    "QueueStartDelay": "15000",
+    "MaxPlayerCount": "0",
+    "StopHardCap" : "false",
+    "DroppedPriority" : "true",
+    "_comment":"DroppedPriorityTime in minutes.",
+    "DroppedPriorityTime": "10", 
+    "ShowPriorities": "true"
 }
