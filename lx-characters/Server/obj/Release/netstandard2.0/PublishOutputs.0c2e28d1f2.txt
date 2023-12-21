@@ -1,0 +1,6 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\publish\lx_characters.Server.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\publish\lx_characters.Server.deps.json
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\publish\lx_characters.Server.net.pdb
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\publish\CitizenFX.Core.Server.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\publish\Microsoft.CSharp.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\publish\Newtonsoft.Json.dll

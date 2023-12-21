@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "w5uYJd0pm4a2nfmb1JbyZMSUO/Jg4rJAM+WuTCY19zKZZmmhrD5qF8Q4pQNZCRwIL/mJt/kSEP2Uu3sf+IE7Jg==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Wests\\Desktop\\FiveMResourceTemplate\\lx-characters\\Client\\lx_characters.Client.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.client\\1.0.7257\\citizenfx.core.client.1.0.7257.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.framework.client\\0.2.3\\citizenfx.framework.client.0.2.3.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,2 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\bin\Release\net452\publish\lx_characters.Client.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\bin\Release\net452\publish\CitizenFX.Core.Client.dll

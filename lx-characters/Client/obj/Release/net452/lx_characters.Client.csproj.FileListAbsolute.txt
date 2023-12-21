@@ -1,0 +1,9 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\bin\Release\net452\lx_characters.Client.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\bin\Release\net452\CitizenFX.Core.Client.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.csproj.AssemblyReference.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.AssemblyInfoInputs.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.AssemblyInfo.cs
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.csproj.CoreCompileInputs.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.csproj.CopyComplete
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Client\obj\Release\net452\lx_characters.Client.net.dll

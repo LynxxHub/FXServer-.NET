@@ -1,0 +1,12 @@
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\lx_characters.Server.deps.json
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\lx_characters.Server.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\lx_characters.Server.net.pdb
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.csproj.AssemblyReference.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.AssemblyInfoInputs.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.AssemblyInfo.cs
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.csproj.CoreCompileInputs.cache
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.net.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.net.pdb
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\bin\Release\netstandard2.0\Newtonsoft.Json.dll
+C:\Users\Wests\Desktop\FiveMResourceTemplate\lx-characters\Server\obj\Release\netstandard2.0\lx_characters.Server.csproj.CopyComplete

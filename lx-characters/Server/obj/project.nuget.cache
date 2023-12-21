@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "hdCQA8OhLWCc9Svav/Db1mB3ZRHXurf5gBFOyBNq6yyAtPUI2RvrmWL/SgOM4F+g2VJ8i/FqNt1SPPKhIcbWGA==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Wests\\Desktop\\FiveMResourceTemplate\\lx-characters\\Server\\lx_characters.Server.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.server\\1.0.7257\\citizenfx.core.server.1.0.7257.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\microsoft.netcore.platforms\\1.1.0\\microsoft.netcore.platforms.1.1.0.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\netstandard.library\\2.0.3\\netstandard.library.2.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}

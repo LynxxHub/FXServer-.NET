@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+      <TargetFramework>netstandard2.0</TargetFramework>
+      <DebugType>portable</DebugType>
+      <TargetName>$(AssemblyName).net</TargetName>
+      <DefineConstants>SERVER</DefineConstants>
+    </PropertyGroup>
+  
+    <ItemGroup>
+      <PackageReference Include="CitizenFX.Core.Server" Version="1.0.*" />
+      <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+  
+      <Compile Include="../Shared/**/*.cs" />
+    </ItemGroup>
+  
+    <ItemGroup>
+      <Reference Include="Newtonsoft.Json">
+        <HintPath>..\Client\bin\Debug\net452\Newtonsoft.Json.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+</Project>
+  
