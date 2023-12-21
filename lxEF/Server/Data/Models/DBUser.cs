@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace lxEF.Server.Data.Models
@@ -14,6 +15,7 @@ namespace lxEF.Server.Data.Models
         public bool IsAdmin { get; private set; }
         public bool IsBanned { get; private set; }
         public bool IsAuthenticated { get; private set; }
+        public List<Character> Characters { get; private set; }
 
         // Constructor
         public DBUser()

@@ -1,37 +1,29 @@
 using CitizenFX.Core;
+using CitizenFX.Core.Native;
 using lxEF.Server.Data;
 using lxEF.Server.Data.Models;
-using lxEF.Server.Factories;
 using lxEF.Server.Managers;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace lxEF.Server
 {
+    //TODO: Change EH with exports!
     public class ServerMain : BaseScript
     {
+        private CharacterManager _characterManager;
         public ServerMain()
         {
-            RegisterUserHandler();
-            DoesPlayerExistHandler();
-            OnPlayerDroppedHandler();
+            _characterManager = new CharacterManager();
+            RegisterEventHandlers();
+            RegisterExports();
         }
 
-        private void RegisterUserHandler()
+        private void RegisterEventHandlers()
         {
-            EventHandlers["EF:RegisterUser"] += new Action<string,string,string,string>(OnRegisterUser);
-
-        }
-
-        private void OnPlayerDroppedHandler()
-        {
+            EventHandlers["EF:RegisterUser"] += new Action<string, string, string, string>(OnRegisterUser);
             EventHandlers["playerDropped"] += new Action<Player, string>(OnPlayerDropped);
-        }
-
-        private void DoesPlayerExistHandler()
-        {
             EventHandlers.Add("EF:DoesUserExist", new Action<string, string, CallbackDelegate>(async (steamID, license, callback) =>
             {
                 Debug.WriteLine("EF:DoesUserExist TRIGGER");
@@ -42,7 +34,46 @@ namespace lxEF.Server
             }));
         }
 
-        private async void OnPlayerDropped([FromSource]Player player, string reason)
+
+        private void RegisterExports()
+        {
+            Exports.Add("CreateCharacterAsync", new Action<Player, string, string, int, DateTime, string, string>(OnCreateCharacter));
+            EventHandlers.Add("GetUserCharacters", new Action<Player, CallbackDelegate>(async (player, callback) =>
+            {
+                Debug.WriteLine("DEBUG: SERVER-SIDE GetUserCharacters TRIGGERED");
+
+                var identifiers = GetUserIdentifiers(player);
+                DBUser dbUser = await DBUserManager.GetDBUserAsync(identifiers["Steam"], identifiers["License"]);
+                Debug.WriteLine(dbUser.SteamID.ToString());
+                callback(dbUser.Characters);
+            }));
+            Exports.Add("RemoveCharacter", new Action<Player,string>(OnRemoveCharacter));
+        }
+
+        private void OnRemoveCharacter([FromSource]Player player, string citizenId)
+        {
+            //TODO
+        }
+
+        private async void OnCreateCharacter([FromSource] Player player, string firstName, string lastName, int age, DateTime dob, string gender, string nationality)
+        {
+            if (player != null && firstName != null && lastName != null && age != 0 && dob != null && gender != null)
+            {
+                var identifiers = GetUserIdentifiers(player);
+                //TODO: Implement caching
+                var dbUser = await DBUserManager.GetDBUserAsync(identifiers["Steam"], identifiers["License"]);
+                if (dbUser != null)
+                {
+                    await _characterManager.CreateCharacterAsync(firstName, lastName, age, dob, gender, nationality, dbUser);
+                }
+                else
+                {
+                    Debug.WriteLine("dbUser is null (CreateUserExport)");
+                }
+            }
+        }
+
+        private async void OnPlayerDropped([FromSource] Player player, string reason)
         {
             var identifiers = GetUserIdentifiers(player);
 
@@ -52,12 +83,12 @@ namespace lxEF.Server
 
         public async void OnRegisterUser(string username, string steamId, string license, string ip)
         {
-            Debug.WriteLine("THIS IS THE 1st LINE FOR DEBUG");
             try
             {
-                Debug.WriteLine("THIS IS THE 2nd LINE FOR DEBUG");
-                await DBUserFactory.CreateUserAsync(username, steamId, license, ip);
-                Debug.WriteLine($"EF: User - {username} created");
+                var result = await DBUserManager.CreateUserAsync(username, steamId, license, ip);
+
+                if (result == CreateUserResult.UserCreatedSuccessfully)
+                    Debug.WriteLine($"EF: User - {username} created");
             }
             catch (Exception ex)
             {
@@ -82,7 +113,8 @@ namespace lxEF.Server
                     await context.SaveChangesAsync();
                     return true;
                 }
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 return false;
@@ -90,10 +122,9 @@ namespace lxEF.Server
 
         }
 
+        //TODO: move to user manager
         private Dictionary<string, string> GetUserIdentifiers(Player player)
         {
-            Debug.WriteLine("THIS IS THE 3rd LINE FOR DEBUG");
-
             Dictionary<string, string> userIdentifiers = new Dictionary<string, string>();
             foreach (var identifier in player.Identifiers)
             {
@@ -115,7 +146,7 @@ namespace lxEF.Server
             return userIdentifiers;
         }
 
-        public static string ConvertSteamIDHexToDec(string hexSteamID)
+        private string ConvertSteamIDHexToDec(string hexSteamID)
         {
             if (string.IsNullOrEmpty(hexSteamID) || !hexSteamID.StartsWith("steam:"))
             {
