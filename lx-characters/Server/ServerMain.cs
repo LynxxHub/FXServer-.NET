@@ -13,12 +13,13 @@ namespace lx_characters.Server
 
             EventHandlers.Add("chars:serializeJsonRequest", new Action<dynamic, NetworkCallbackDelegate>((data, cb) =>
             {
-                string json = JsonConvert.SerializeObject(data);
+                string json = JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 Debug.WriteLine(json);
                 cb(json);
             }));
 
         }
+
 
         private void OnSetupCharactersRequest([FromSource]Player player)
         {
@@ -26,15 +27,16 @@ namespace lx_characters.Server
             {
                 Debug.WriteLine(player.Name);
                 Debug.WriteLine("DEBUG: SERVER-SIDE setupCharacters TRIGGERED");
-                object[] characters = null;
 
-                player.TriggerEvent("EF:GetUserCharacters", new Action<object[]>(dbCharacters =>
+                TriggerEvent("EF:GetUserCharacters", new Action<string>((cb) =>
                 {
                     Debug.WriteLine("DEBUG: SERVER-SIDE GetUserCharacters TRIGGER");
-                    characters = dbCharacters;
-                    Debug.WriteLine(characters.Length.ToString());
-                    TriggerClientEvent("chars:setupCharactersResponse", characters);
-                }));
+
+                    Debug.WriteLine(cb);
+
+                    TriggerClientEvent(player, "chars:setupCharactersResponse", cb);
+
+                }), player.Handle, "setupCharacters");
 
             }
             catch(Exception ex)

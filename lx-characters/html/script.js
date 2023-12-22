@@ -16,7 +16,7 @@ $(document).ready(function (){
     console.log("Hello JS World")
     window.addEventListener('message', function (event) {
         console.log("yes");
-        console.log(event.data.action);
+        
         var data = event.data;
         if (data.action == "ui") {
 			NChar = data.nChar;
@@ -107,6 +107,9 @@ $(document).ready(function (){
         }
 
         if (data.action == "setupCharacters") {
+            console.log(event.data.characters[0].CitizenID);
+            console.log(event.data.characters[0].FirstName);
+            console.log(event.data.characters[0].LastName);
             setupCharacters(event.data.characters)
         }
 
@@ -144,32 +147,34 @@ $(".btn-iniciar").on("click", function() {
 });
 
 function setupCharInfo(cData) {
+    console.log(JSON.stringify(cData));
     if (cData == 'empty') {
         $('.character-info-valid').html('<span id="no-char">The selected character slot is not in use yet.<br><br>This character doesn\'t have information yet.</span>');
     } else {
         var gender = "Man"
-        if (cData.charinfo.gender == 1) { gender = "Woman" }
+        if (cData.gender == 1) { gender = "Woman" }
         $('.character-info-valid').html(
-        '<div class="character-info-box"><span id="info-label">Name: </span><span class="char-info-js">'+cData.charinfo.firstname+' '+cData.charinfo.lastname+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Birth date: </span><span class="char-info-js">'+cData.charinfo.birthdate+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Name: </span><span class="char-info-js">'+cData.FirstName+' '+cData.LastName+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Birth date: </span><span class="char-info-js">'+cData.DateOfBirth+'</span></div>' +
         '<div class="character-info-box"><span id="info-label">Gender: </span><span class="char-info-js">'+gender+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Nationality: </span><span class="char-info-js">'+cData.charinfo.nationality+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Job: </span><span class="char-info-js">'+cData.job.label+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+cData.money.cash+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Bank: </span><span class="char-info-js">&#36; '+cData.money.bank+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Phone number: </span><span class="char-info-js">'+cData.charinfo.phone+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Account number: </span><span class="char-info-js">'+cData.charinfo.account+'</span></div>');
+        '<div class="character-info-box"><span id="info-label">Nationality: </span><span class="char-info-js">'+cData.Nationality+'</span></div>');
+        // '<div class="character-info-box"><span id="info-label">Job: </span><span class="char-info-js">'+cData.job.label+'</span></div>' +
+        // '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+cData.money.cash+'</span></div>' +
+        // '<div class="character-info-box"><span id="info-label">Bank: </span><span class="char-info-js">&#36; '+cData.money.bank+'</span></div>' +
+        // '<div class="character-info-box"><span id="info-label">Phone number: </span><span class="char-info-js">'+cData.charinfo.phone+'</span></div>' +
+        // '<div class="character-info-box"><span id="info-label">Account number: </span><span class="char-info-js">'+cData.charinfo.account+'</span></div>');
     }
 }
 
 function setupCharacters(characters) {
     $.each(characters, function(index, char){
-        $('#char-'+char.cid).html("");
-        $('#char-'+char.cid).data("citizenid", char.citizenid);
+        console.log("test");
+        $('#char-'+1).html("");
+        $('#char-'+1).data("cid", char.CitizenID);
         setTimeout(function(){
-            $('#char-'+char.cid).html('<span id="slot-name"> <i class="fa fa-user" aria-hidden="true" style="color:rgb(255, 182, 47);"></i> '+char.charinfo.firstname+' '+char.charinfo.lastname+'<span id="cid">' + char.citizenid + '</span></span>');
-            $('#char-'+char.cid).data('cData', char)
-            $('#char-'+char.cid).data('cid', char.cid)
+            $('#char-'+1).html('<span id="slot-name"> <i class="fa fa-user" aria-hidden="true" style="color:rgb(255, 182, 47);"></i> '+char.FirstName+' '+char.LastName+'<span id="cid">' + char.CitizenID + '</span></span>');
+            $('#char-'+1).data('cData', char)
+            $('#char-'+1).data('cid', char.CitizenID)
         }, 100)
     })
 }
@@ -199,6 +204,9 @@ $(document).on('click', '.character', function(e) {
             }));
         } else {
             $(selectedChar).addClass("char-selected");
+            console.log(JSON.stringify($(this).data));
+            console.log($(this).data('cid'));
+            // setupCharInfo($(this).data)
             setupCharInfo($(this).data('cData'))
             $("#play-text").html('<i class="fa fa-sign-in" aria-hidden="true"></i> Play');
             $("#delete-text").html('<i class="fa fa-trash" aria-hidden="true"></i> Delete');

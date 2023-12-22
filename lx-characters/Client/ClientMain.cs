@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
+using System;
+using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 
 namespace lx_characters.Client
@@ -18,7 +15,7 @@ namespace lx_characters.Client
                 Tick += OnTick;
             RegisterNuiCallbackType("setupCharacters");
             EventHandlers["__cfx_nui:setupCharacters"] += new Action(OnSetupCharacters);
-            EventHandlers["chars:setupCharactersResponse"] += new Action<Player, object[]>(SetupCharactersResponse);
+            EventHandlers["chars:setupCharactersResponse"] += new Action<string>(OnSetupCharactersResponse);
             EventHandlers["chars:start"] += new Action(OnStart);
         }
 
@@ -62,23 +59,11 @@ namespace lx_characters.Client
             }));
         }
 
-        private void SetupCharactersResponse(Player player, object[] characters)
+        private void OnSetupCharactersResponse(string jsonData)
         {
             Debug.WriteLine("DEBUG: CLIENT-SIDE SetupCharactersResponse TRIGGER");
-
-            string action = "setupCharacters";
-
-            var data = new
-            { action, characters };
-
-
-            TriggerServerEvent("chars:serializeJsonRequest", data, new Action<string>((result) =>
-            {
-                Debug.WriteLine(result[1].ToString());
-                SendNuiMessage(result);
-            }));
-
-            
+            Debug.WriteLine(jsonData);
+            SendNuiMessage(jsonData);
         }
 
         private void OnSetupCharacters()
