@@ -3,6 +3,7 @@ using lxEF.Server.Data;
 using lxEF.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,7 +12,21 @@ namespace lxEF.Server.Managers
     //TODO: IMPLEMENT CACHING!!
     public static class DBUserManager
     {
-
+        public static async Task<List<DBUser>> LoadUsersAsync()
+        {
+            try
+            {
+                using (var context = new lxDbContext())
+                {
+                    return await context.DBUsers.Include(u => u.Characters).ToListAsync();
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingManager.PrintExceptions(ex);
+                return null;
+            }
+        }
         public static async Task<CreateUserResult> CreateUserAsync(string username, string steamID, string license, string ip)
         {
             try
@@ -55,11 +70,40 @@ namespace lxEF.Server.Managers
 
         public static async Task<DBUser> GetDBUserAsync(string steamID, string license)
         {
+            Debug.WriteLine("GetDBUserAsync TRIGGERED");
             try
             {
                 using (var context = new lxDbContext())
                 {
                     var dbUser = await context.DBUsers.FirstOrDefaultAsync(dbp => dbp.SteamID == steamID && dbp.License == license);
+                    Debug.WriteLine(dbUser.IP);
+                    if (dbUser != null)
+                        return dbUser;
+
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                LoggingManager.PrintExceptions(ex);
+                return null;
+            }
+
+        }
+
+        public static DBUser GetDBUser(string steamID, string license)
+        {
+            Debug.WriteLine("GetDBUserAsync TRIGGERED");
+            try
+            {
+                using (var context = new lxDbContext())
+                {
+                    Debug.WriteLine(steamID);
+                    Debug.WriteLine(license);
+
+                    var dbUser = context.DBUsers.FirstOrDefault(dbp => dbp.SteamID == steamID && dbp.License == license);
+                    
+                    Debug.WriteLine(dbUser.IP);
                     if (dbUser != null)
                         return dbUser;
 

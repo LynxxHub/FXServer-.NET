@@ -34,6 +34,7 @@ namespace lxEF.Server.Data.Models
             IsAdmin = false;
             IsBanned = false;
             IsAuthenticated = false;
+            Characters = new List<Character>();
         }
 
 

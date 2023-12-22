@@ -1,8 +1,10 @@
 using CitizenFX.Core;
+using System.Linq;
 using CitizenFX.Core.Native;
 using lxEF.Server.Data;
 using lxEF.Server.Data.Models;
 using lxEF.Server.Managers;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -13,15 +15,31 @@ namespace lxEF.Server
     public class ServerMain : BaseScript
     {
         private CharacterManager _characterManager;
+        private List<DBUser> _users;
+
         public ServerMain()
         {
             _characterManager = new CharacterManager();
+
+
+
+            LoadUsers();
             RegisterEventHandlers();
             RegisterExports();
         }
 
+        private void LoadUsers()
+        {
+            Task.Run(async () =>
+            {
+                await Delay(0);
+                _users = await DBUserManager.LoadUsersAsync();
+            });
+        }
+
         private void RegisterEventHandlers()
         {
+            EventHandlers["EF:GetUserCharacters"] += new Action<CallbackDelegate, int, string>(OnGetUserCharacters);
             EventHandlers["EF:RegisterUser"] += new Action<string, string, string, string>(OnRegisterUser);
             EventHandlers["playerDropped"] += new Action<Player, string>(OnPlayerDropped);
             EventHandlers.Add("EF:DoesUserExist", new Action<string, string, CallbackDelegate>(async (steamID, license, callback) =>
@@ -38,19 +56,37 @@ namespace lxEF.Server
         private void RegisterExports()
         {
             Exports.Add("CreateCharacterAsync", new Action<Player, string, string, int, DateTime, string, string>(OnCreateCharacter));
-            EventHandlers.Add("GetUserCharacters", new Action<Player, CallbackDelegate>(async (player, callback) =>
-            {
-                Debug.WriteLine("DEBUG: SERVER-SIDE GetUserCharacters TRIGGERED");
-
-                var identifiers = GetUserIdentifiers(player);
-                DBUser dbUser = await DBUserManager.GetDBUserAsync(identifiers["Steam"], identifiers["License"]);
-                Debug.WriteLine(dbUser.SteamID.ToString());
-                callback(dbUser.Characters);
-            }));
-            Exports.Add("RemoveCharacter", new Action<Player,string>(OnRemoveCharacter));
+            Exports.Add("RemoveCharacter", new Action<Player, string>(OnRemoveCharacter));
         }
 
-        private void OnRemoveCharacter([FromSource]Player player, string citizenId)
+        private void OnGetUserCharacters(CallbackDelegate callback, int playerHandle, string action = "")
+        {
+            try
+            {
+                var player = Players[playerHandle];
+                Debug.WriteLine(player.Name);
+                var identifiers = GetUserIdentifiers(player);
+                Debug.WriteLine(identifiers["Steam"]);
+                Debug.WriteLine(identifiers["License"]);
+                DBUser dbUser = _users.FirstOrDefault(u => u.SteamID == identifiers["Steam"] && u.License == identifiers["License"]);
+
+                var data = new
+                {
+                    action = action,
+                    characters = dbUser.Characters,
+                };
+
+                string json = JsonConvert.SerializeObject(data);
+                callback.Invoke(json);
+            }
+            catch (Exception ex)
+            {
+                LoggingManager.PrintExceptions(ex);
+            }
+
+        }
+
+        private void OnRemoveCharacter([FromSource] Player player, string citizenId)
         {
             //TODO
         }
@@ -133,7 +169,7 @@ namespace lxEF.Server
                 {
                     string steamID = ConvertSteamIDHexToDec(identifier);
                     if (steamID != null)
-                        userIdentifiers.Add("Steam", identifier);
+                        userIdentifiers.Add("Steam", steamID);
                 }
                 else if (identifier.StartsWith("license:"))
                     userIdentifiers.Add("License", identifier);

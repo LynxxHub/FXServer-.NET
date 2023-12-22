@@ -4,7 +4,7 @@
   "success": true,
   "projectFilePath": "C:\\Users\\Wests\\Desktop\\FiveMResourceTemplate\\lxEF\\Server\\lxEF.Server.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.server\\1.0.7211\\citizenfx.core.server.1.0.7211.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.server\\1.0.7257\\citizenfx.core.server.1.0.7257.nupkg.sha512",
     "C:\\Users\\Wests\\.nuget\\packages\\microsoft.csharp\\4.4.0\\microsoft.csharp.4.4.0.nupkg.sha512",
     "C:\\Users\\Wests\\.nuget\\packages\\microsoft.entityframeworkcore\\2.0.0\\microsoft.entityframeworkcore.2.0.0.nupkg.sha512",
     "C:\\Users\\Wests\\.nuget\\packages\\microsoft.entityframeworkcore.design\\2.0.0\\microsoft.entityframeworkcore.design.2.0.0.nupkg.sha512",

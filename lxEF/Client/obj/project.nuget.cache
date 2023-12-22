@@ -4,7 +4,7 @@
   "success": true,
   "projectFilePath": "C:\\Users\\Wests\\Desktop\\FiveMResourceTemplate\\lxEF\\Client\\lxEF.Client.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.client\\1.0.7211\\citizenfx.core.client.1.0.7211.nupkg.sha512",
+    "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.core.client\\1.0.7257\\citizenfx.core.client.1.0.7257.nupkg.sha512",
     "C:\\Users\\Wests\\.nuget\\packages\\citizenfx.framework.client\\0.2.3\\citizenfx.framework.client.0.2.3.nupkg.sha512"
   ],
   "logs": []

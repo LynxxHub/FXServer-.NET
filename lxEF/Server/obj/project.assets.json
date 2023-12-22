@@ -2,7 +2,7 @@
   "version": 3,
   "targets": {
     ".NETStandard,Version=v2.0": {
-      "CitizenFX.Core.Server/1.0.7211": {
+      "CitizenFX.Core.Server/1.0.7257": {
         "type": "package",
         "compile": {
           "lib/netstandard20/CitizenFX.Core.Server.dll": {
@@ -1909,14 +1909,14 @@
     }
   },
   "libraries": {
-    "CitizenFX.Core.Server/1.0.7211": {
-      "sha512": "qBiqUDArZbZGEzRaHOXtkNTd5mHh0od9daySMkBSG7iQCNtYkqilJx7wpsX3WadAhmfBy8Ccutvp99dfYUnUVw==",
+    "CitizenFX.Core.Server/1.0.7257": {
+      "sha512": "084734VMaHpemOB00pAEsQf6SnL6jseFv/uG2bPBwJt4L/sLQFZ5JzQffeCjJOBa60Xxighz79nBx3A3A9a7JA==",
       "type": "package",
-      "path": "citizenfx.core.server/1.0.7211",
+      "path": "citizenfx.core.server/1.0.7257",
       "files": [
         ".nupkg.metadata",
         ".signature.p7s",
-        "citizenfx.core.server.1.0.7211.nupkg.sha512",
+        "citizenfx.core.server.1.0.7257.nupkg.sha512",
         "citizenfx.core.server.nuspec",
         "lib/net45/CitizenFX.Core.Server.dll",
         "lib/net45/CitizenFX.Core.Server.xml",

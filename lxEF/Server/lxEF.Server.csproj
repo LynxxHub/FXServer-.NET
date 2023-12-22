@@ -21,4 +21,10 @@
 
 		<Compile Include="../Migrations/**/*.cs" />
 	</ItemGroup>
+
+	<ItemGroup>
+		<Reference Include="Newtonsoft.Json">
+			<HintPath>..\Server\bin\Release\netstandard20\publish\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 </Project>

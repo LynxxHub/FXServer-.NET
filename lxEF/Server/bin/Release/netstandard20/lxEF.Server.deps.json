@@ -9,7 +9,7 @@
     ".NETStandard,Version=v2.0/": {
       "lxEF.Server/1.0.0": {
         "dependencies": {
-          "CitizenFX.Core.Server": "1.0.7211",
+          "CitizenFX.Core.Server": "1.0.7257",
           "Microsoft.EntityFrameworkCore": "2.0.0",
           "Microsoft.EntityFrameworkCore.SqlServer": "2.0.0",
           "NETStandard.Library": "2.0.3",
@@ -19,7 +19,7 @@
           "lxEF.Server.dll": {}
         }
       },
-      "CitizenFX.Core.Server/1.0.7211": {
+      "CitizenFX.Core.Server/1.0.7257": {
         "runtime": {
           "lib/netstandard20/CitizenFX.Core.Server.dll": {
             "assemblyVersion": "0.0.0.0",
@@ -1242,12 +1242,12 @@
       "serviceable": false,
       "sha512": ""
     },
-    "CitizenFX.Core.Server/1.0.7211": {
+    "CitizenFX.Core.Server/1.0.7257": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-qBiqUDArZbZGEzRaHOXtkNTd5mHh0od9daySMkBSG7iQCNtYkqilJx7wpsX3WadAhmfBy8Ccutvp99dfYUnUVw==",
-      "path": "citizenfx.core.server/1.0.7211",
-      "hashPath": "citizenfx.core.server.1.0.7211.nupkg.sha512"
+      "sha512": "sha512-084734VMaHpemOB00pAEsQf6SnL6jseFv/uG2bPBwJt4L/sLQFZ5JzQffeCjJOBa60Xxighz79nBx3A3A9a7JA==",
+      "path": "citizenfx.core.server/1.0.7257",
+      "hashPath": "citizenfx.core.server.1.0.7257.nupkg.sha512"
     },
     "Microsoft.CSharp/4.4.0": {
       "type": "package",

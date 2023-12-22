@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -42,8 +43,9 @@ namespace lxEF.Server.Data.Models
 
         public string Ped { get; private set; }
 
-        [ForeignKey("UserId")]
+        [JsonIgnore]
         public DBUser User { get; private set; }
+
 
         // and more and more and more....
 
