@@ -1,9 +1,0 @@
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\bin\Debug\net452\lxEF.Client.net.dll
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\bin\Debug\net452\CitizenFX.Core.Client.dll
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.csproj.AssemblyReference.cache
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.GeneratedMSBuildEditorConfig.editorconfig
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.AssemblyInfoInputs.cache
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.AssemblyInfo.cs
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.csproj.CoreCompileInputs.cache
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.csproj.CopyComplete
-C:\Users\Wests\Desktop\FiveMResourceTemplate\lxEF\Client\obj\Debug\net452\lxEF.Client.net.dll

@@ -1,5 +1,6 @@
 ﻿using CitizenFX.Core;
 using lxEF.Server.Data;
+using lxEF.Server.Data.DTO;
 using lxEF.Server.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,26 +24,32 @@ namespace lxEF.Server.Managers
             });
         }
 
-        public async Task<Character> CreateCharacterAsync(string firstName, string lastName, int age, DateTime dob, string gender, string nationality, DBUser user, string ped = "")
+        public async Task<Character> CreateCharacterAsync(CharacterDTO characterDTO, DBUser user, string ped = "")
         {
             Character character = null;
             try
             {
-                character = new Character(firstName, lastName, age, dob, gender, nationality, user, ped);
-
+                character = new Character(characterDTO.FirstName, characterDTO.LastName, 18, characterDTO.DateOfBirth, characterDTO.Gender, characterDTO.Nationality, user, ped);
+                Debug.WriteLine(character.FirstName);
+                Debug.WriteLine(user.Username);
                 if (character != null)
                 {
                     using (var context = new lxDbContext())
                     {
-                        context.Characters.Add(character);
+                        Debug.WriteLine(user.Characters.Any().ToString());
+                        user.Characters.Add(character);
                         _cachedCharacters.Add(character);
-                        await context.SaveChangesAsync();
+                        context.Entry(character).State = EntityState.Added;
+                        int result = await context.SaveChangesAsync();
+                        if (result > 0)
+                        {
+                            await ServerMain.LoadUsers();
+                        }
+                        Debug.WriteLine($"ROWS UPDATED {result}");
                     }
 
-                    Debug.WriteLine($"Character {firstName} {lastName} has been created successfully! OWNER: {user.Username}");
-
+                    Debug.WriteLine($"Character {character.FirstName} {character.LastName} has been successfully created! OWNER: {user.Username}");
                 }
-
 
                 return character;
             }
@@ -57,7 +64,9 @@ namespace lxEF.Server.Managers
         {
             try
             {
-                var character = GetCharacter(citizenId);
+                Debug.WriteLine(username+ " " + citizenId);
+                var character = await GetCharacterAsync(citizenId);
+                Debug.WriteLine(character.FirstName+ " " + character.LastName);
 
                 if (character != null)
                 {
@@ -65,10 +74,12 @@ namespace lxEF.Server.Managers
                     {
                         context.Characters.Remove(character);
                         _cachedCharacters.Remove(character);
-                        await context.SaveChangesAsync();
+                        int affectedRows = await context.SaveChangesAsync();
+                        Debug.WriteLine($"Affected rows: {affectedRows}");
                     }
 
                     Debug.WriteLine($"Character {character.FirstName} {character.LastName} has been deleted! OWNER: {username}");
+                    await ServerMain.LoadUsers();
                     return true;
                 }
 
@@ -118,7 +129,7 @@ namespace lxEF.Server.Managers
             {
                 using (var context = new lxDbContext())
                 {
-                    characters = await context.Characters.ToListAsync();
+                    characters = await context.Characters.Include(c => c.User).ToListAsync();
                     return characters;
                 }
             }

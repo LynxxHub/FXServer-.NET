@@ -75,8 +75,7 @@ namespace lxEF.Server.Managers
             {
                 using (var context = new lxDbContext())
                 {
-                    var dbUser = await context.DBUsers.FirstOrDefaultAsync(dbp => dbp.SteamID == steamID && dbp.License == license);
-                    Debug.WriteLine(dbUser.IP);
+                    var dbUser = await context.DBUsers.Include(u => u.Characters).FirstOrDefaultAsync(dbp => dbp.SteamID == steamID && dbp.License == license);
                     if (dbUser != null)
                         return dbUser;
 

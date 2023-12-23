@@ -13,6 +13,8 @@ namespace lxEF.Server.Data.Models
         [Key]
         public string CitizenID { get; private set; }
 
+        public int CharacterID { get; private set; }
+
         public string FirstName { get; private set; }
 
         public string LastName { get; private set; }
@@ -47,6 +49,7 @@ namespace lxEF.Server.Data.Models
         public DBUser User { get; private set; }
 
 
+
         // and more and more and more....
 
         public Character()
@@ -73,6 +76,7 @@ namespace lxEF.Server.Data.Models
             //CurrentDrugs = new List<string>();
             User = user;
             Ped = ped;
+            CharacterID = user.Characters.Count + 1;
         }
 
         private string GenerateCitizenID(DateTime dateOfBirth)

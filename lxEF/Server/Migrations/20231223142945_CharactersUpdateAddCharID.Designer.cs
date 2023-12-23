@@ -11,9 +11,10 @@ using System;
 namespace lxEF.Server.Migrations
 {
     [DbContext(typeof(lxDbContext))]
-    partial class lxDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231223142945_CharactersUpdateAddCharID")]
+    partial class CharactersUpdateAddCharID
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

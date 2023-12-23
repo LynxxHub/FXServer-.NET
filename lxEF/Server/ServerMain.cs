@@ -8,33 +8,32 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using lxEF.Server.Data.DTO;
 
 namespace lxEF.Server
 {
-    //TODO: Change EH with exports!
     public class ServerMain : BaseScript
     {
         private CharacterManager _characterManager;
-        private List<DBUser> _users;
+        public static List<DBUser> DBUsers { get; private set; }
 
         public ServerMain()
         {
             _characterManager = new CharacterManager();
 
-
-
-            LoadUsers();
             RegisterEventHandlers();
-            RegisterExports();
+            LoadUsers();
         }
 
-        private void LoadUsers()
+        public static Task LoadUsers()
         {
             Task.Run(async () =>
             {
                 await Delay(0);
-                _users = await DBUserManager.LoadUsersAsync();
+                DBUsers = await DBUserManager.LoadUsersAsync(); 
             });
+
+            return Task.CompletedTask;
         }
 
         private void RegisterEventHandlers()
@@ -42,6 +41,8 @@ namespace lxEF.Server
             EventHandlers["EF:GetUserCharacters"] += new Action<CallbackDelegate, int, string>(OnGetUserCharacters);
             EventHandlers["EF:RegisterUser"] += new Action<string, string, string, string>(OnRegisterUser);
             EventHandlers["playerDropped"] += new Action<Player, string>(OnPlayerDropped);
+            EventHandlers.Add("EF:CreateCharacter", new Action<Player, dynamic>(OnCreateCharacter));
+            EventHandlers.Add("EF:RemoveCharacter", new Action<Player, string>(OnRemoveCharacter));
             EventHandlers.Add("EF:DoesUserExist", new Action<string, string, CallbackDelegate>(async (steamID, license, callback) =>
             {
                 Debug.WriteLine("EF:DoesUserExist TRIGGER");
@@ -50,13 +51,6 @@ namespace lxEF.Server
                 Debug.WriteLine($"Does Exists: {exists}");
                 callback(exists);
             }));
-        }
-
-
-        private void RegisterExports()
-        {
-            Exports.Add("CreateCharacterAsync", new Action<Player, string, string, int, DateTime, string, string>(OnCreateCharacter));
-            Exports.Add("RemoveCharacter", new Action<Player, string>(OnRemoveCharacter));
         }
 
         private void OnGetUserCharacters(CallbackDelegate callback, int playerHandle, string action = "")
@@ -68,7 +62,7 @@ namespace lxEF.Server
                 var identifiers = GetUserIdentifiers(player);
                 Debug.WriteLine(identifiers["Steam"]);
                 Debug.WriteLine(identifiers["License"]);
-                DBUser dbUser = _users.FirstOrDefault(u => u.SteamID == identifiers["Steam"] && u.License == identifiers["License"]);
+                DBUser dbUser = DBUsers.FirstOrDefault(u => u.SteamID == identifiers["Steam"] && u.License == identifiers["License"]);
 
                 var data = new
                 {
@@ -88,27 +82,49 @@ namespace lxEF.Server
 
         private void OnRemoveCharacter([FromSource] Player player, string citizenId)
         {
-            //TODO
-        }
-
-        private async void OnCreateCharacter([FromSource] Player player, string firstName, string lastName, int age, DateTime dob, string gender, string nationality)
-        {
-            if (player != null && firstName != null && lastName != null && age != 0 && dob != null && gender != null)
+            
+            try
             {
                 var identifiers = GetUserIdentifiers(player);
-                //TODO: Implement caching
-                var dbUser = await DBUserManager.GetDBUserAsync(identifiers["Steam"], identifiers["License"]);
-                if (dbUser != null)
+                Character character = _characterManager.GetCharacter(citizenId);
+
+                bool steamAuth = identifiers["Steam"] == character.User.SteamID;
+                bool licenseAuth = identifiers["License"] == character.User.License;
+
+                if (steamAuth && licenseAuth)
                 {
-                    await _characterManager.CreateCharacterAsync(firstName, lastName, age, dob, gender, nationality, dbUser);
-                }
-                else
-                {
-                    Debug.WriteLine("dbUser is null (CreateUserExport)");
+                    var success = Task.Run(async () => { return await _characterManager.RemoveCharacterAsync(citizenId, character.User.Username); });
                 }
             }
+            catch (Exception ex) { LoggingManager.PrintExceptions(ex); }
+
         }
 
+        private void OnCreateCharacter([FromSource] Player player, dynamic data)
+        {
+            var jsonData = JsonConvert.SerializeObject(data);
+            CharacterDTO characterDTO = JsonConvert.DeserializeObject<CharacterDTO>(jsonData);
+
+            Task.Run(async () =>
+            {
+                if (player != null && characterDTO.FirstName != null && characterDTO.LastName != null && characterDTO.Nationality != null && characterDTO.DateOfBirth != null && characterDTO.Gender != null)
+                {
+                    var identifiers = GetUserIdentifiers(player);
+                    //TODO: Implement caching
+                    var dbUser = await DBUserManager.GetDBUserAsync(identifiers["Steam"], identifiers["License"]);
+                    if (dbUser != null)
+                    {
+                        await _characterManager.CreateCharacterAsync(characterDTO, dbUser);
+                    }
+                    else
+                    {
+                        Debug.WriteLine("dbUser is null (CreateUserExport)");
+                    }
+                }
+            });
+        }
+
+        //FixAsync
         private async void OnPlayerDropped([FromSource] Player player, string reason)
         {
             var identifiers = GetUserIdentifiers(player);
@@ -116,7 +132,7 @@ namespace lxEF.Server
             await DBUserManager.LogoutAsync(identifiers["Steam"], identifiers["License"]);
         }
 
-
+        //FixAsync
         public async void OnRegisterUser(string username, string steamId, string license, string ip)
         {
             try
