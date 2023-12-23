@@ -6,12 +6,12 @@ namespace lx_characters.Server
 {
     public class ServerMain : BaseScript
     {
+        //TODO: 1. Check gender validation 2.check music 3.character info icon 4. finish UI customization
         public ServerMain()
         {
-            //null
             EventHandlers.Add("chars:setupCharactersRequest", new Action<Player>(OnSetupCharactersRequest));
 
-            EventHandlers.Add("chars:serializeJsonRequest", new Action<dynamic, NetworkCallbackDelegate>((data, cb) =>
+            EventHandlers.Add("chars:serializeJson", new Action<dynamic, NetworkCallbackDelegate>((data, cb) =>
             {
                 string json = JsonConvert.SerializeObject(data, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
                 Debug.WriteLine(json);

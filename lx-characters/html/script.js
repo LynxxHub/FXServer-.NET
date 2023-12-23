@@ -22,84 +22,7 @@ $(document).ready(function (){
 			NChar = data.nChar;
             EnableDeleteButton = data.enableDeleteButton;
             if (data.toggle) {
-                $('.container').show();
-                $('.jugadores-on').hide();
-                $('.bottombar').show();
-                $('.imagenlogo').hide();
-                $('.topbar').show();
-                $('.topbar').css("top", "-50%");
-                $('.bottombar').css("top", "50%");
-                $('.fondocolor').hide();
-                $('.btn-iniciar').hide();
-                $(".welcomescreen").fadeIn(150);
-                $(".bg-image").fadeIn(150);
-                Characters.resetAll();
-
-                var originalText = "Retrieving player data";
-                var loadingProgress = 0;
-                var loadingDots = 0;
-                $("#loading-text").html(originalText);
-                
-                $('.fondocolor').show();
-                var DotsInterval = setInterval(function() {
-                    $("#loading-text").append(".");
-                    loadingDots++;
-                    loadingProgress++;
-                    if (loadingProgress == 3) {
-                        originalText = "Validating player data"
-                        $("#loading-text").html(originalText);
-                    }
-                    if (loadingProgress == 4) {
-                        originalText = "Retrieving characters"
-                        $("#loading-text").html(originalText);
-                    }
-                    if (loadingProgress == 6) {
-                        originalText = "Validating characters"
-                        $("#loading-text").html(originalText);
-                    }
-                    if(loadingDots == 4) {
-                        $("#loading-text").html(originalText);
-                        loadingDots = 0;
-                    }
-                }, 3000);
-
-                setTimeout(function(){
-                    console.log("hello from 2nd js")
-					setCharactersList()
-                    $.post('https://lx-characters/setupCharacters');
-                    setTimeout(function(){
-                        clearInterval(DotsInterval);
-                        loadingProgress = 0;
-                        originalText = "Retrieving data";
-                        $(".welcomescreen").fadeOut(2000);
-                        $('.imagenlogo').addClass('entrada');
-                        $(".title-screen").fadeIn(100);
-                        $('.btn-iniciar').hide();
-                        $(".title-screen").fadeIn(0, function() {
-                            setTimeout(function() {
-                                $(".imagenlogo").addClass("blinkxd");
-                                Characters.fadeInDown('.topbar', '-95%', 2000);
-                                Characters.fadeInDown('.bottombar', '94.5%', 2000);
-                                Characters.fadeInDown('.imagenlogo', '35%', 2500);
-                                Characters.fadeInDown2('.btn-iniciar', '7%', 1000);
-
-                                $(".fondo-negro").fadeOut(1000);
-                                $('.title-screen').fadeIn(1000);
-                                $('.jugadores-on').html(' ' + data.players + ' Players');
-                            }, 1000);
-                            
-                        });
-                        $(".btn-iniciar").mouseenter(function() {
-                            over_button.play();
-                        });
-                        $("#play, .btn-iniciar").click(function() {
-                            confirmar.play();
-                        });
-                    }, 2000);
-                }, 2000);
-                background.volume = 0.3;
-                background.currentTime = 0
-                background.play();
+                start();
             } else {
                 $('.container').fadeOut(250);
                 Characters.resetAll();
@@ -107,9 +30,6 @@ $(document).ready(function (){
         }
 
         if (data.action == "setupCharacters") {
-            console.log(event.data.characters[0].CitizenID);
-            console.log(event.data.characters[0].FirstName);
-            console.log(event.data.characters[0].LastName);
             setupCharacters(event.data.characters)
         }
 
@@ -146,17 +66,112 @@ $(".btn-iniciar").on("click", function() {
         })
 });
 
+
+function AfterCreate() {
+    $(".welcomescreen").fadeIn(150);
+    setTimeout(function(){
+        setCharactersList()
+        $.post('https://lx-characters/setupCharacters');
+        setTimeout(function(){
+            $(".welcomescreen").fadeOut(150);
+            selectedChar = null;
+            confirmar.play();
+        }, 2000);
+    }, 2000);
+}
+
+function start() {
+    console.log("start");
+    $('.container').show();
+    $('.jugadores-on').hide();
+    $('.bottombar').show();
+    $('.imagenlogo').hide();
+    $('.topbar').show();
+    $('.topbar').css("top", "-50%");
+    $('.bottombar').css("top", "50%");
+    $('.fondocolor').hide();
+    $('.btn-iniciar').hide();
+    $(".welcomescreen").fadeIn(150);
+    $(".bg-image").fadeIn(150);
+    Characters.resetAll();
+
+    var originalText = "Retrieving player data";
+    var loadingProgress = 0;
+    var loadingDots = 0;
+    $("#loading-text").html(originalText);
+    
+    $('.fondocolor').show();
+    var DotsInterval = setInterval(function() {
+        $("#loading-text").append(".");
+        loadingDots++;
+        loadingProgress++;
+        if (loadingProgress == 3) {
+            originalText = "Validating player data"
+            $("#loading-text").html(originalText);
+        }
+        if (loadingProgress == 4) {
+            originalText = "Retrieving characters"
+            $("#loading-text").html(originalText);
+        }
+        if (loadingProgress == 6) {
+            originalText = "Validating characters"
+            $("#loading-text").html(originalText);
+        }
+        if(loadingDots == 4) {
+            $("#loading-text").html(originalText);
+            loadingDots = 0;
+        }
+    }, 3000);
+
+    setTimeout(function(){
+        console.log("hello from 2nd js")
+        setCharactersList()
+        $.post('https://lx-characters/setupCharacters');
+        setTimeout(function(){
+            clearInterval(DotsInterval);
+            loadingProgress = 0;
+            originalText = "Retrieving data";
+            $(".welcomescreen").fadeOut(2000);
+            $('.imagenlogo').addClass('entrada');
+            $(".title-screen").fadeIn(100);
+            $('.btn-iniciar').hide();
+            $(".title-screen").fadeIn(0, function() {
+                setTimeout(function() {
+                    $(".imagenlogo").addClass("blinkxd");
+                    Characters.fadeInDown('.topbar', '-95%', 2000);
+                    Characters.fadeInDown('.bottombar', '94.5%', 2000);
+                    Characters.fadeInDown('.imagenlogo', '35%', 2500);
+                    Characters.fadeInDown2('.btn-iniciar', '7%', 1000);
+
+                    $(".fondo-negro").fadeOut(1000);
+                    $('.title-screen').fadeIn(1000);
+                    // $('.jugadores-on').html(' ' + data.players + ' Players');
+                }, 1000);
+                
+            });
+            $(".btn-iniciar").mouseenter(function() {
+                over_button.play();
+            });
+            $("#play, .btn-iniciar").click(function() {
+                confirmar.play();
+            });
+        }, 2000);
+    }, 2000);
+    background.volume = 0.3;
+    background.currentTime = 0
+    background.play();
+}
+
 function setupCharInfo(cData) {
-    console.log(JSON.stringify(cData));
     if (cData == 'empty') {
         $('.character-info-valid').html('<span id="no-char">The selected character slot is not in use yet.<br><br>This character doesn\'t have information yet.</span>');
     } else {
-        var gender = "Man"
-        if (cData.gender == 1) { gender = "Woman" }
+        // var gender = "Man"
+        // if (cData.gender == 1) { gender = "Woman" }
         $('.character-info-valid').html(
         '<div class="character-info-box"><span id="info-label">Name: </span><span class="char-info-js">'+cData.FirstName+' '+cData.LastName+'</span></div>' +
         '<div class="character-info-box"><span id="info-label">Birth date: </span><span class="char-info-js">'+cData.DateOfBirth+'</span></div>' +
-        '<div class="character-info-box"><span id="info-label">Gender: </span><span class="char-info-js">'+gender+'</span></div>' +
+        '<div class="character-info-box"><span id="info-label">Gender: </span><span class="char-info-js">'+cData.Gender+'</span></div>' +
         '<div class="character-info-box"><span id="info-label">Nationality: </span><span class="char-info-js">'+cData.Nationality+'</span></div>');
         // '<div class="character-info-box"><span id="info-label">Job: </span><span class="char-info-js">'+cData.job.label+'</span></div>' +
         // '<div class="character-info-box"><span id="info-label">Cash: </span><span class="char-info-js">&#36; '+cData.money.cash+'</span></div>' +
@@ -168,15 +183,16 @@ function setupCharInfo(cData) {
 
 function setupCharacters(characters) {
     $.each(characters, function(index, char){
-        console.log("test");
-        $('#char-'+1).html("");
-        $('#char-'+1).data("cid", char.CitizenID);
-        setTimeout(function(){
-            $('#char-'+1).html('<span id="slot-name"> <i class="fa fa-user" aria-hidden="true" style="color:rgb(255, 182, 47);"></i> '+char.FirstName+' '+char.LastName+'<span id="cid">' + char.CitizenID + '</span></span>');
-            $('#char-'+1).data('cData', char)
-            $('#char-'+1).data('cid', char.CitizenID)
-        }, 100)
-    })
+        index++;
+        var characterElement = $('#char-'+ index);
+        characterElement.addClass('character');
+        characterElement.html("");
+        characterElement.data("cid", index);
+
+        characterElement.html('<span id="slot-name"> <i class="fa fa-user" aria-hidden="true" style="color:rgb(255, 182, 47);"></i> '+char.FirstName+' '+char.LastName+'<span id="cid">' + char.CitizenID + '</span></span>');
+        characterElement.data('cData', char)
+        characterElement.data('cid', index);
+    });
 }
 
 $(document).on('click', '#close-log', function(e){
@@ -189,8 +205,11 @@ $(document).on('click', '#close-log', function(e){
 });
 
 $(document).on('click', '.character', function(e) {
+    console.log("selecting ");
     var cDataPed = $(this).data('cData');
     e.preventDefault();
+    e.stopPropagation();
+    // console.log((selectedChar).data('cid'));
     if (selectedChar === null) {
         selectedChar = $(this);
         if ((selectedChar).data('cid') == "") {
@@ -204,9 +223,7 @@ $(document).on('click', '.character', function(e) {
             }));
         } else {
             $(selectedChar).addClass("char-selected");
-            console.log(JSON.stringify($(this).data));
-            console.log($(this).data('cid'));
-            // setupCharInfo($(this).data)
+            console.log("From first else");
             setupCharInfo($(this).data('cData'))
             $("#play-text").html('<i class="fa fa-sign-in" aria-hidden="true"></i> Play');
             $("#delete-text").html('<i class="fa fa-trash" aria-hidden="true"></i> Delete');
@@ -232,6 +249,7 @@ $(document).on('click', '.character', function(e) {
             }));
         } else {
             $(selectedChar).addClass("char-selected");
+            console.log("second else");
             setupCharInfo($(this).data('cData'))
             $("#play-text").html('<i class="fa fa-sign-in" aria-hidden="true"></i> Play');
             $("#delete-text").html('<i class="fa fa-trash" aria-hidden="true"></i> Delete');
@@ -281,7 +299,7 @@ $(document).on('click', '#create', function (e) {
     let nationality= escapeHtml($('#nationality').val())
     let birthdate= escapeHtml($('#birthdate').val())
     let gender= escapeHtml($('select[name=gender]').val())
-    let cid = escapeHtml($(selectedChar).attr('id').replace('char-', ''))
+    //let cid = escapeHtml($(selectedChar).attr('id').replace('char-', ''))
     const regTest = new RegExp(profList.join('|'), 'i');
     //An Ugly check of null objects
 
@@ -295,28 +313,38 @@ $(document).on('click', '#create', function (e) {
         return false;
     }
 
-    $.post('https://lx-character/createNewCharacter', JSON.stringify({
+    $.post('https://lx-characters/createNewCharacter', JSON.stringify({
         firstname: firstname,
         lastname: lastname,
         nationality: nationality,
-        birthdate: birthdate,
+        dateofbirth: birthdate,
         gender: gender
     }));
-    $(".container").fadeOut(150);
+    Characters.fadeOutDown('.character-register', '125%', 400);
     $('.characters-list').css("filter", "none");
     $('.character-info').css("filter", "none");
+    Characters.fadeInDown('.character-info', '20%', 400);
+    Characters.fadeInDown('.characters-list', '20%', 400);
     Characters.fadeOutDown('.character-register', '125%', 400);
-    refreshCharacters()
+    AfterCreate();
 
+    $('#first_name').val('');
+    $('#last_name').val('');
+    $('#nationality').val('');
+    $('#birthdate').val('');
+    $('select[name=gender]').val('Man');
 });
 
 $(document).on('click', '#accept-delete', function(e){
-    $.post('https://lx-character/removeCharacter', JSON.stringify({
-        citizenid: $(selectedChar).data("citizenid"),
+    $.post('https://lx-characters/removeCharacter', JSON.stringify({
+        citizenid: $(selectedChar).data("cData").CitizenID,
     }));
     $('.character-delete').fadeOut(150);
     $('.characters-block').css("filter", "none");
-    refreshCharacters();
+    Characters.fadeInDown('.character-info', '20%', 400);
+    Characters.fadeInDown('.characters-list', '20%', 400);
+    AfterCreate();
+    setupCharInfo("empty");
 });
 
 $(document).on('click', '#cancel-delete', function(e){

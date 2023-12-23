@@ -1,6 +1,7 @@
 using CitizenFX.Core;
 using CitizenFX.Core.Native;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using static CitizenFX.Core.Native.API;
 
@@ -14,11 +15,35 @@ namespace lx_characters.Client
             if (!_hasStarted)
                 Tick += OnTick;
             RegisterNuiCallbackType("setupCharacters");
+            RegisterNuiCallbackType("createNewCharacter");
+            RegisterNuiCallbackType("removeCharacter");
             EventHandlers["__cfx_nui:setupCharacters"] += new Action(OnSetupCharacters);
+            EventHandlers["__cfx_nui:createNewCharacter"] += new Action<IDictionary<string, object>>(OnCreateCharacter);
+            EventHandlers["__cfx_nui:removeCharacter"] += new Action<IDictionary<string, object>>(OnRemoveCharacter);
             EventHandlers["chars:setupCharactersResponse"] += new Action<string>(OnSetupCharactersResponse);
             EventHandlers["chars:start"] += new Action(OnStart);
         }
 
+        private void OnRemoveCharacter(IDictionary<string, object> data)
+        {
+            try
+            {
+                Debug.WriteLine(data["citizenid"].ToString());
+                TriggerServerEvent("EF:RemoveCharacter", data["citizenid"]);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex.Message);
+                Debug.WriteLine(ex.InnerException?.Message);
+                Debug.WriteLine(ex.StackTrace);
+            }
+        }
+
+        //TODO: Change functionality of EFCreateCharacter
+        private void OnCreateCharacter(IDictionary<string, object> data)
+        {
+            TriggerServerEvent("EF:CreateCharacter", data);
+        }
 
         private async Task OnTick()
         {
@@ -49,7 +74,7 @@ namespace lx_characters.Client
                 translations = ""
             };
 
-            TriggerServerEvent("chars:serializeJsonRequest", data, new Action<string>((result) =>
+            TriggerServerEvent("chars:serializeJson", data, new Action<string>((result) =>
             {
                 Debug.WriteLine(result);
                 ShutdownLoadingScreenNui();
