@@ -9,29 +9,40 @@ using System.Threading.Tasks;
 
 namespace lxEF.Server.Managers
 {
-    //TODO: IMPLEMENT CACHING!!
-    public static class DBUserManager
+    public class DBUserManager
     {
-        public static async Task<List<DBUser>> LoadUsersAsync()
+        private readonly object _lockObject = new object();
+
+        public List<DBUser> DBUsers { get; set; }
+
+        public DBUserManager()
+        {
+            Task.Run(async () => await LoadUsersAsync());
+            DatabaseSyncTask();
+        }
+
+        public async Task<bool> LoadUsersAsync()
         {
             try
             {
                 using (var context = new lxDbContext())
                 {
-                    return await context.DBUsers.Include(u => u.Characters).ToListAsync();
+                    DBUsers = await context.DBUsers.Include(u => u.Characters).ToListAsync();
                 }
+
+                return true;
             }
             catch (Exception ex)
             {
                 LoggingManager.PrintExceptions(ex);
-                return null;
+                return false;
             }
         }
-        public static async Task<CreateUserResult> CreateUserAsync(string username, string steamID, string license, string ip)
+        public async Task<CreateUserResult> CreateUserAsync(string username, string steamID, string license, string ip)
         {
             try
             {
-                var existingUser = await DBUserManager.GetDBUserAsync(steamID, license);
+                var existingUser = await GetDBUserAsync(steamID, license);
                 if (existingUser != null)
                 {
                     return CreateUserResult.UserAlreadyExists;
@@ -40,7 +51,7 @@ namespace lxEF.Server.Managers
                 var userID = Guid.NewGuid().ToString();
                 var dbUser = new DBUser(userID, username, steamID, license, ip);
 
-                var isBanned = await DBUserManager.IsUserBannedAsync(dbUser);
+                var isBanned = IsUserBannedAsync(dbUser);
 
                 if (isBanned)
                 {
@@ -55,6 +66,8 @@ namespace lxEF.Server.Managers
                     if (result != null)
                     {
                         await context.SaveChangesAsync();
+                        SyncAllUsers();
+                        await LoadUsersAsync();
                         return CreateUserResult.UserCreatedSuccessfully;
                     }
                 }
@@ -68,7 +81,7 @@ namespace lxEF.Server.Managers
             }
         }
 
-        public static async Task<DBUser> GetDBUserAsync(string steamID, string license)
+        public async Task<DBUser> GetDBUserAsync(string steamID, string license)
         {
             Debug.WriteLine("GetDBUserAsync TRIGGERED");
             try
@@ -90,24 +103,16 @@ namespace lxEF.Server.Managers
 
         }
 
-        public static DBUser GetDBUser(string steamID, string license)
+        public DBUser GetDBUser(string steamID, string license)
         {
-            Debug.WriteLine("GetDBUserAsync TRIGGERED");
             try
             {
-                using (var context = new lxDbContext())
-                {
-                    Debug.WriteLine(steamID);
-                    Debug.WriteLine(license);
+                var dbUser = DBUsers.FirstOrDefault(dbu => dbu.SteamID == steamID && dbu.License == license);
 
-                    var dbUser = context.DBUsers.FirstOrDefault(dbp => dbp.SteamID == steamID && dbp.License == license);
-                    
-                    Debug.WriteLine(dbUser.IP);
-                    if (dbUser != null)
-                        return dbUser;
+                if (dbUser != null)
+                    return dbUser;
 
-                    return null;
-                }
+                return null;
             }
             catch (Exception ex)
             {
@@ -117,24 +122,19 @@ namespace lxEF.Server.Managers
 
         }
 
-
-        public static async Task<bool> AuthenticateAsync(DBUser dbUser)
+        public bool Authenticate(string steamId, string license)
         {
             try
             {
-                using (var context = new lxDbContext())
+                var dbUser = GetDBUser(steamId, license);
+                if (dbUser != null)
                 {
-                    if (dbUser != null)
-                    {
-                        bool isAuthenticated = dbUser.Authenticate();
-                        if (isAuthenticated)
-                            await context.SaveChangesAsync();
+                    bool isAuthenticated = dbUser.Authenticate();
 
-                        return isAuthenticated;
-                    }
-
-                    return false;
+                    return isAuthenticated;
                 }
+
+                return false;
             }
             catch (Exception ex)
             {
@@ -144,20 +144,15 @@ namespace lxEF.Server.Managers
             }
         }
 
-        public static async Task<bool> LogoutAsync(string steamID, string license)
+        public bool Logout(string steamID, string license)
         {
             try
             {
-                using (var context = new lxDbContext())
+                var dbUser = GetDBUser(steamID, license);
+                if (dbUser != null)
                 {
-                    var dbUser = await context.DBUsers.FirstOrDefaultAsync(dbp => dbp.SteamID == steamID && dbp.License == license);
-                    if (dbUser != null)
-                    {
-                        dbUser.Logout();
-                        await context.SaveChangesAsync();
-                        return true;
-                    }
-
+                    dbUser.Logout();
+                    return true;
                 }
             }
             catch (Exception ex)
@@ -166,15 +161,97 @@ namespace lxEF.Server.Managers
                 return false;
             }
             return false;
-
         }
 
-        public static async Task<bool> IsUserBannedAsync(DBUser user)
+        public Dictionary<string, string> GetUserIdentifiers(Player player)
+        {
+            Dictionary<string, string> userIdentifiers = new Dictionary<string, string>();
+            foreach (var identifier in player.Identifiers)
+            {
+                if (identifier.StartsWith("steam:"))
+                {
+                    string steamID = ConvertSteamIDHexToDec(identifier);
+                    if (steamID != null)
+                        userIdentifiers.Add("Steam", steamID);
+                }
+                else if (identifier.StartsWith("license:"))
+                    userIdentifiers.Add("License", identifier);
+                else if (identifier.StartsWith("ip:"))
+                    userIdentifiers.Add("IP", identifier);
+                else if (identifier.StartsWith("discord:"))
+                    userIdentifiers.Add("Discord", identifier);
+            }
+
+            return userIdentifiers;
+        }
+
+        private string ConvertSteamIDHexToDec(string hexSteamID)
+        {
+            if (string.IsNullOrEmpty(hexSteamID) || !hexSteamID.StartsWith("steam:"))
+            {
+                return null;
+            }
+
+            string hexPart = hexSteamID.Replace("steam:", "");
+            long decSteamID = long.Parse(hexPart, System.Globalization.NumberStyles.HexNumber);
+
+            return "steam:" + decSteamID.ToString();
+        }
+
+        public bool IsUserBannedAsync(DBUser user)
         {
             //TODO: Implement validation trough custom banlist
-            //DELETE THIS:
-            await GetDBUserAsync(user.SteamID, user.License);
+
             return user.IsBanned;
+        }
+
+
+        //Caching mechanism
+        //TODO: Change into a service
+        private void SyncUser(DBUser cachedUser)
+        {
+            lock (_lockObject)
+            {
+                using (var context = new lxDbContext())
+                {
+                    var dbUser = context.DBUsers.FirstOrDefault(u => u.UserId == cachedUser.UserId);
+                    context.Entry(dbUser).CurrentValues.SetValues(cachedUser);
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        public void SyncAllUsers()
+        {
+            lock (_lockObject)
+            {
+                using (var context = new lxDbContext())
+                {
+                    foreach (var cachedUser in DBUsers)
+                    {
+                        var dbUser = context.DBUsers.FirstOrDefault(u => u.UserId == cachedUser.UserId);
+                        if (dbUser != null)
+                        {
+                            context.Entry(dbUser).CurrentValues.SetValues(cachedUser);
+                        }
+                    }
+
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        private void DatabaseSyncTask()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    //make configurable
+                    await Task.Delay(5 * 60 * 1000);
+                    SyncAllUsers();
+                }
+            });
         }
     }
 }

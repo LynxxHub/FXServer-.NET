@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace lxEF.Server.Factories
 {
-    internal static class DBUserFactory
+    public static class DBUserFactory
     {
-
-        public static async Task<CreateUserResult> CreateUserAsync(string username, string steamID, string license, string ip)
+        public static async Task<CreateUserResult> CreateUserAsync(string username, string steamID, string license, string ip, DBUserManager dbUserManager)
         {
             try
             {
-                var existingUser = await DBUserManager.GetDBUserAsync(steamID, license);
+                var existingUser = await dbUserManager.GetDBUserAsync(steamID, license);
                 if (existingUser != null)
                 {
                     return CreateUserResult.UserAlreadyExists;
@@ -22,7 +21,7 @@ namespace lxEF.Server.Factories
                 var userID = Guid.NewGuid().ToString();
                 var dbUser = new DBUser(userID, username, steamID, license, ip);
 
-                var isBanned = await DBUserManager.IsUserBannedAsync(dbUser);
+                var isBanned = dbUserManager.IsUserBannedAsync(dbUser);
 
                 if (isBanned)
                 {

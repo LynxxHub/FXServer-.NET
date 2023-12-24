@@ -12,11 +12,13 @@ namespace lxEF.Server.Managers
 {
     public class CharacterManager
     {
+        private readonly DBUserManager _dbUserManager;
         private List<Character> _cachedCharacters;
 
-        public CharacterManager()
+        public CharacterManager(DBUserManager dbUserManager)
         {
             _cachedCharacters = new List<Character>();
+            _dbUserManager = dbUserManager;
 
             Task.Run(async () =>
             {
@@ -30,24 +32,20 @@ namespace lxEF.Server.Managers
             try
             {
                 character = new Character(characterDTO.FirstName, characterDTO.LastName, 18, characterDTO.DateOfBirth, characterDTO.Gender, characterDTO.Nationality, user, ped);
-                Debug.WriteLine(character.FirstName);
-                Debug.WriteLine(user.Username);
                 if (character != null)
                 {
                     using (var context = new lxDbContext())
                     {
-                        Debug.WriteLine(user.Characters.Any().ToString());
-                        user.Characters.Add(character);
                         _cachedCharacters.Add(character);
                         context.Entry(character).State = EntityState.Added;
                         int result = await context.SaveChangesAsync();
                         if (result > 0)
                         {
-                            await ServerMain.LoadUsers();
+                            _dbUserManager.SyncAllUsers();
+                            await _dbUserManager.LoadUsersAsync();
                         }
                         Debug.WriteLine($"ROWS UPDATED {result}");
                     }
-
                     Debug.WriteLine($"Character {character.FirstName} {character.LastName} has been successfully created! OWNER: {user.Username}");
                 }
 
@@ -79,7 +77,9 @@ namespace lxEF.Server.Managers
                     }
 
                     Debug.WriteLine($"Character {character.FirstName} {character.LastName} has been deleted! OWNER: {username}");
-                    await ServerMain.LoadUsers();
+                    _dbUserManager.SyncAllUsers();
+                    await _dbUserManager.LoadUsersAsync();
+
                     return true;
                 }
 

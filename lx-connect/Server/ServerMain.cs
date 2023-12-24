@@ -198,15 +198,11 @@ namespace lx_connect.Server
                 await Delay(_config.QueueRefreshRate + 2500);
             }
 
-            Debug.WriteLine(steamValid.ToString());
-            Debug.WriteLine(licenceValid.ToString());
-            Debug.WriteLine(ipValid.ToString());
-
             if (steamValid && licenceValid && ipValid)
             {
                 deferrals.update(_language["AuthenticationMessage"]);
 
-                TriggerEvent("EF:DoesUserExist", userIdentifiers["Steam"], userIdentifiers["License"], new Action<bool>(async exists =>
+                TriggerEvent("EF:DoesUserExist", userIdentifiers["Steam"], userIdentifiers["License"], new Action<bool>(exists =>
                 {
                     Debug.WriteLine($"CONNECT: {exists}");
 
@@ -214,7 +210,7 @@ namespace lx_connect.Server
                     {
                         TriggerEvent("EF:RegisterUser", player.Name, userIdentifiers["Steam"], userIdentifiers["License"], userIdentifiers["IP"]);
                         deferrals.update(_language["AuthenticationFailedMessage"]);
-                        await Delay(5000);
+                        Delay(5000);
                         deferrals.update(_language["LicenseRegistrationMessage"]);
 
                     }

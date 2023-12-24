@@ -9,6 +9,7 @@ namespace lx_connect.Client
     {
         public ClientMain()
         {
+
         }
     }
 }
