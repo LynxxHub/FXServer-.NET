@@ -14,6 +14,8 @@ var over_button = document.getElementById("click");
 
 $(document).ready(function (){
     console.log("Hello JS World")
+    // background.autoplay = true;
+
     window.addEventListener('message', function (event) {
         console.log("yes");
         
@@ -55,7 +57,7 @@ $('.disconnect-btn').click(function(e){
 });
 
 $(".btn-iniciar").on("click", function() {
-    background.volume = 0.3;
+    // background.volume = 0.3;
         $(".title-screen").fadeOut(300, function() {
             Characters.fadeInDown('.character-info', '20%', 400);
             Characters.fadeInDown('.characters-list', '20%', 400);
@@ -157,9 +159,10 @@ function start() {
             });
         }, 2000);
     }, 2000);
-    background.volume = 0.3;
-    background.currentTime = 0
-    background.play();
+    //background.volume = 1;
+    // background.currentTime = 0.8;
+    // console.log("play");
+    //  background.play();
 }
 
 function setupCharInfo(cData) {
@@ -475,6 +478,6 @@ Characters.resetAll = function() {
     selectedChar = null;
 }
 
-function musicFadeOut() {
-    $(background).animate({ volume: 0 }, 3000);
-}
+// function musicFadeOut() {
+//     $(background).animate({ volume: 0 }, 3000);
+// }

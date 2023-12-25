@@ -293,16 +293,15 @@
 }
 
 .char-selected {
-    box-shadow: 0 0 100px rgba(255, 1, 1, 0.4) !important;
+    box-shadow: 0 0 100px rgb(1 136 255 / 40%) !important;
     border-top: 2px solid;
     border-bottom: 2px solid;
     border-left: 0.5px solid;
     border-right:0.5px solid;
     border-image: linear-gradient(var(--angle), #547199,#c3252500,#c3252500,#c3252500,#547199) 1;
     animation: 3s rotate linear infinite,gradient 15s ease infinite;
-    background: linear-gradient(-45deg, #351c1ca1, #2b1010ab,#270505a6,#2c0808a1,#290202b0);
+    background: linear-gradient(-45deg, #1c2435a1, #101c2bab,#051227a6,#08182ca1,#020529b0);
     background-size: 400% 400%;
-
 }
 
 .disabled {
@@ -359,7 +358,7 @@
     transition: 0.2s;
     box-shadow: 0 0 10px #ff0033 !important;
     overflow: visible !important;
-    background: linear-gradient(-45deg, #682e3ac2, #913144c9,#72192bc0,#a01732c4,#ff0033c4);
+    background: linear-gradient(-45deg, #ff0033,#25b6c300,#ff0033,#25b6c300);
     background-size: 400% 400%;
     border-image: linear-gradient(var(--angle), #ff0033,#25b6c300,#ff0033,#25b6c300) 1;
     font-size:5vh;
@@ -627,7 +626,7 @@
     margin-left: auto;
     margin-right: auto;
     left: 27%;
-    background-color: rgba(15, 0, 0, 0.8);
+    background: linear-gradient(-45deg, #1c2435a1, #101c2bab,#051227a6,#08182ca1,#020529b0);
     border-radius: .6vh;
     border:2px solid black;
     padding: 30px;
@@ -635,13 +634,14 @@
     box-shadow: 0 0 40px rgb(20 0 0 / 98%) !important;
     animation: 8s rotate linear infinite,shake-slow 10s ease-in-out infinite;
     border-image: linear-gradient(var(--angle), #547199,#c3252500,#c3252500,#c3252500,#547199) 1;
-
 }
 
 .material-icons-one {
-    margin-left: 39.5vh;
+    margin-left: 35.5vh;
+    position: absolute;
+    top: 4px;
+    right: 62px;
     color: #ededed;
-    background: linear-gradient(-45deg, #351c1ca1, #2b1010ab,#270505a6,#2c0808a1,#290202b0);
     animation: 3s rotate linear infinite,gradient 15s ease infinite;
     background-size: 400% 400%;
     font-size: 1.3vh;
@@ -650,9 +650,11 @@
     padding: .3vh;
 }
 .material-icons-one:hover {
-    margin-left: 39.5vh;
+    margin-left: 35.5vh;
+    position: absolute;
+    top: 4px;
+    right: 62px;
     color: #ededed;
-    background: linear-gradient(-45deg, #351c1ca1, #2b1010ab,#270505a6,#2c0808a1,#290202b0);
     animation: 3s rotate linear infinite,gradient 15s ease infinite;
     background-size: 400% 400%;
     font-size: 1.3vh;
@@ -685,7 +687,7 @@
     float: left;
     margin-top: 1vh;
     border: none;
-    background-color: #444444;
+    background-color: #586f973d;
     outline: none;
     width: 92%;
     height: 3vh;
@@ -702,8 +704,8 @@
 select {
     position: absolute;
     border: none;
-    border: .3vh solid #444444;
-    background-color: #171717;
+    border: .3vh solid #788fa3;
+    background-color: #313e58;
     outline: none;
     width: 93.5%;
     height: 4vh;
@@ -723,16 +725,16 @@ select {
 }
 
 select:hover {
-    background-color: rgba(34, 34, 34, 0.808);
+    background-color: #788fa3a6;
     cursor: pointer;
 }
 
 select:focus {
-    background-color: rgba(34, 34, 34, 0.808);
+    background-color: #788fa3a6;
 }
 
 #gender option {
-    background-color: transparent;
+    background-color: #313e58;
     border: none;
     outline: none;
 }
@@ -778,11 +780,12 @@ input[type="date"]::-webkit-clear-button {
     font-family: 'Lato', monospace;
 }
 
+
 .character-reg-btn {
     position: absolute;
     max-width: 87%;
     height: 4vh;
-    background: linear-gradient(-45deg, #351c1ca1, #2b1010ab,#270505a6,#2c0808a1,#290202b0);
+    background: linear-gradient(-45deg, #682e3ac2, #913144c9,#72192bc0,#a01732c4,#ff0033c4);
     background-size: 400% 400%;
     border-radius: .3vh;
     bottom: 3vh;
@@ -791,16 +794,14 @@ input[type="date"]::-webkit-clear-button {
     right: 0;
     animation:7s rotate linear infinite,gradient 15s ease infinite;
     border: 1.5px solid;
-    border-image: linear-gradient(var(--angle), #547199,#c3252500,#c3252500,#c3252500,#547199) 1;
-    border-radius: 7px;
-
+        border-image: linear-gradient(var(--angle), #ff0033,#25b6c300,#ff0033,#25b6c300) 1;
 }
 
 .character-reg-btn:hover {
     position: absolute;
     max-width: 87%;
     height: 4vh;
-    background: linear-gradient(-45deg, #351c1ca1, #2b1010ab,#270505a6,#2c0808a1,#290202b0);
+    background: linear-gradient(-45deg, #ff0033,#25b6c300,#ff0033,#25b6c300);
     background-size: 400% 400%;
     border-radius: .3vh;
     bottom: 3vh;
