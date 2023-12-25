@@ -65,7 +65,6 @@ namespace lxEF.Server
 
         private void OnRemoveCharacter([FromSource] Player player, string citizenId)
         {
-
             try
             {
                 var identifiers = _dbUserManager.GetUserIdentifiers(player);

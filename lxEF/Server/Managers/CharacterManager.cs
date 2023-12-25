@@ -13,6 +13,7 @@ namespace lxEF.Server.Managers
     public class CharacterManager
     {
         private readonly DBUserManager _dbUserManager;
+        private readonly object _lockObject = new object();
         private List<Character> _cachedCharacters;
 
         public CharacterManager(DBUserManager dbUserManager)
@@ -24,6 +25,8 @@ namespace lxEF.Server.Managers
             {
                 _cachedCharacters = await GetAllCharactersAsync();
             });
+
+            DatabaseSyncTask();
         }
 
         public async Task<Character> CreateCharacterAsync(CharacterDTO characterDTO, DBUser user, string ped = "")
@@ -138,6 +141,54 @@ namespace lxEF.Server.Managers
                 LoggingManager.PrintExceptions(ex);
                 return characters;
             }
+        }
+
+        //Caching mechanism
+        //TODO: Change into a service
+        private void SyncCharacter(Character cachedChar)
+        {
+            lock (_lockObject)
+            {
+                using (var context = new lxDbContext())
+                {
+                    var dbChar = context.Characters.FirstOrDefault(c => c.CharacterID == c.CharacterID);
+                    context.Entry(dbChar).CurrentValues.SetValues(cachedChar);
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        public void SyncAllCharacters()
+        {
+            lock (_lockObject)
+            {
+                using (var context = new lxDbContext())
+                {
+                    foreach (var cachedChar in _cachedCharacters)
+                    {
+                        var dbChar = context.Characters.FirstOrDefault(c => c.CharacterID == c.CharacterID);
+                        if (dbChar != null)
+                        {
+                            context.Entry(dbChar).CurrentValues.SetValues(cachedChar);
+                        }
+                    }
+
+                    context.SaveChanges();
+                }
+            }
+        }
+
+        private void DatabaseSyncTask()
+        {
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    //make configurable
+                    await Task.Delay(5 * 60 * 1000);
+                    SyncAllCharacters();
+                }
+            });
         }
     }
 }
